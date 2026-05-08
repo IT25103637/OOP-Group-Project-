@@ -1,0 +1,332 @@
+<!-- Component 05: Frontend Templates | Author: Sandaru (it25100632@my.sliit.lk) -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout/base :: layout(~{::div.content})">
+<head><title>RenTex — Premium Vehicle Rentals</title></head>
+<body>
+<div class="content">
+
+  <!-- ═══════════════════════════════════════════════════ HERO -->
+  <div class="relative w-full min-h-[88vh] flex flex-col items-center justify-center overflow-hidden">
+
+    <!-- Background image + dark overlay -->
+    <div class="absolute inset-0 z-0">
+      <img src="/images/banner.jpg" alt="Hero Background" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-br from-black/80 via-black/65 to-slate-900/80"></div>
+      <!-- subtle animated grain texture via SVG -->
+      <div class="absolute inset-0 opacity-10" style="background-image:url('data:image/svg+xml,%3Csvg width=\'200\' height=\'200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\'/%3E%3C/filter%3E%3Crect width=\'200\' height=\'200\' filter=\'url(%23n)\' opacity=\'1\'/%3E%3C/svg%3E');background-size:200px 200px"></div>
+    </div>
+
+    <!-- Hero text -->
+    <div class="relative z-10 text-center px-4 mb-10 mt-8">
+      <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+        <span class="w-2 h-2 rounded-full bg-rofi-yellow animate-pulse"></span>
+        <span class="text-white/80 text-xs font-bold uppercase tracking-widest">Sri Lanka's #1 Rental Platform</span>
+      </div>
+      <h1 class="text-5xl md:text-7xl font-black tracking-tight leading-none mb-4"
+          style="background:linear-gradient(135deg,#ffffff 0%,#e2e8f0 50%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+        Premium Rides.<br />Seamless Journeys.
+      </h1>
+      <p class="text-slate-300 text-lg md:text-xl font-medium max-w-xl mx-auto">
+        Book any vehicle — sedan, SUV, bike or truck — in minutes. Pay in LKR. Drive today.
+      </p>
+    </div>
+
+    <!-- ── Floating Glassmorphism Search Card ── -->
+    <div class="relative z-10 w-full max-w-5xl mx-auto px-4">
+      <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 overflow-hidden">
+
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-100">
+          <div id="tab-vehicle-only" onclick="toggleDriver(false)"
+               class="flex-1 text-center py-4 text-sm font-extrabold text-rofi-black border-b-4 border-rofi-yellow bg-white cursor-pointer transition-all select-none">
+            🚗 &nbsp;Vehicle Only
+          </div>
+          <div id="tab-with-driver" onclick="toggleDriver(true)"
+               class="flex-1 text-center py-4 text-sm font-bold text-gray-400 bg-gray-50 border-b-4 border-transparent cursor-pointer hover:bg-gray-100 transition-all select-none">
+            👤 &nbsp;With Driver
+          </div>
+        </div>
+
+        <!-- Search Form — DO NOT change action/name attributes -->
+        <form th:action="@{/vehicles/search}" method="get" class="p-8">
+          <input type="hidden" name="hasDriver" id="hasDriverInput" value="false" />
+
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-6 items-end">
+
+            <!-- Vehicle Type -->
+            <div class="relative col-span-1">
+              <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Vehicle Type</label>
+              <select name="type" class="w-full border-b-2 border-gray-200 py-2.5 text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow bg-transparent appearance-none cursor-pointer transition-colors">
+                <option value="">Any Type</option>
+                <option value="CAR">Car</option>
+                <option value="BIKE">Bike</option>
+                <option value="VAN">Van</option>
+                <option value="TRUCK">Truck</option>
+              </select>
+              <div class="absolute right-0 bottom-3 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="col-span-1">
+              <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Location</label>
+              <input type="text" name="location" placeholder="City, Airport…"
+                     class="w-full border-b-2 border-gray-200 py-2.5 text-rofi-black font-bold placeholder-gray-300 focus:outline-none focus:border-rofi-yellow bg-transparent transition-colors" />
+            </div>
+
+            <!-- Pick-up Date -->
+            <div class="col-span-1">
+              <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Pick-up Date</label>
+              <input type="date" name="startDate"
+                     class="w-full border-b-2 border-gray-200 py-2.5 text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow bg-transparent transition-colors" />
+            </div>
+
+            <!-- Return Date -->
+            <div class="col-span-1">
+              <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Return Date</label>
+              <input type="date" name="endDate"
+                     class="w-full border-b-2 border-gray-200 py-2.5 text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow bg-transparent transition-colors" />
+            </div>
+
+            <!-- Search Button -->
+            <div class="col-span-1">
+              <button type="submit"
+                      class="w-full py-3.5 bg-gradient-to-r from-[#FFC107] to-[#FF9800] hover:from-[#FFB300] hover:to-[#F57C00] text-white font-black text-base rounded-2xl hover:scale-105 hover:shadow-lg transition-all duration-300 shadow-md flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                Search
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- bottom fade -->
+    <div class="absolute bottom-0 left-0 right-0 h-24 z-0" style="background:linear-gradient(to bottom,transparent,#F9F9F9)"></div>
+  </div>
+
+  <!-- Tab toggle script — preserved exactly -->
+  <script>
+    function toggleDriver(isWithDriver) {
+      var vt = document.getElementById('tab-vehicle-only');
+      var wt = document.getElementById('tab-with-driver');
+      var hi = document.getElementById('hasDriverInput');
+      if (isWithDriver) {
+        wt.classList.remove('text-gray-400','bg-gray-50','border-transparent');
+        wt.classList.add('text-rofi-black','bg-white','border-rofi-yellow','font-extrabold');
+        vt.classList.remove('text-rofi-black','bg-white','border-rofi-yellow','font-extrabold');
+        vt.classList.add('text-gray-400','bg-gray-50','border-transparent','font-bold');
+        hi.value = "true";
+      } else {
+        vt.classList.remove('text-gray-400','bg-gray-50','border-transparent','font-bold');
+        vt.classList.add('text-rofi-black','bg-white','border-rofi-yellow','font-extrabold');
+        wt.classList.remove('text-rofi-black','bg-white','border-rofi-yellow','font-extrabold');
+        wt.classList.add('text-gray-400','bg-gray-50','border-transparent','font-bold');
+        hi.value = "false";
+      }
+    }
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════ STATS BAR -->
+  <div class="bg-rofi-black py-8">
+    <div class="max-w-5xl mx-auto px-4 grid grid-cols-3 gap-4 text-center">
+      <div>
+        <div class="text-3xl font-black text-rofi-yellow">50+</div>
+        <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Premium Vehicles</div>
+      </div>
+      <div class="border-x border-white/10">
+        <div class="text-3xl font-black text-rofi-yellow">LKR</div>
+        <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Local Currency</div>
+      </div>
+      <div>
+        <div class="text-3xl font-black text-rofi-yellow">24/7</div>
+        <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Customer Support</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ FLEET SHOWCASE -->
+  <div class="max-w-7xl mx-auto px-4 py-20">
+    <div class="text-center mb-12">
+      <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-black uppercase tracking-widest rounded-full mb-3">Our Fleet</span>
+      <h2 class="text-4xl font-black text-rofi-black tracking-tight">Explore Premium Categories</h2>
+      <p class="text-gray-500 font-medium mt-3 max-w-xl mx-auto">From luxury sedans to rugged trucks — every journey starts with the perfect vehicle.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <!-- Card 1: Luxury Sedans -->
+      <a href="/vehicles/search?type=CAR" class="group block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 relative cursor-pointer">
+        <div class="relative h-64 overflow-hidden bg-gray-900">
+          <img src="/images/benz-c.jpg" alt="Luxury Sedan"
+               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div class="absolute top-4 left-4">
+            <span class="bg-rofi-yellow text-black text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Luxury</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-6">
+            <h3 class="text-white text-xl font-black mb-1">Luxury Sedans</h3>
+            <p class="text-gray-300 text-sm font-medium">Benz · BMW · Audi</p>
+            <div class="mt-3 flex items-center gap-1 text-rofi-yellow text-xs font-bold">
+              <span>Browse fleet</span>
+              <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 2: City Cars -->
+      <a href="/vehicles/search?type=CAR" class="group block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 relative cursor-pointer">
+        <div class="relative h-64 overflow-hidden bg-gray-900">
+          <img src="/images/prius.jpg" alt="City Car"
+               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div class="absolute top-4 left-4">
+            <span class="bg-white text-black text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Eco</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-6">
+            <h3 class="text-white text-xl font-black mb-1">City Cars</h3>
+            <p class="text-gray-300 text-sm font-medium">Toyota Prius · Hybrid · Compact</p>
+            <div class="mt-3 flex items-center gap-1 text-rofi-yellow text-xs font-bold">
+              <span>Browse fleet</span>
+              <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 3: Vans & Trucks -->
+      <a href="/vehicles/search?type=VAN" class="group block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 relative cursor-pointer">
+        <div class="relative h-64 overflow-hidden bg-gray-900">
+          <img src="/images/hiace.jpg" alt="Van"
+               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div class="absolute top-4 left-4">
+            <span class="bg-slate-700 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Utility</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-6">
+            <h3 class="text-white text-xl font-black mb-1">Vans &amp; Trucks</h3>
+            <p class="text-gray-300 text-sm font-medium">HiAce · Ashok Leyland · Cargo</p>
+            <div class="mt-3 flex items-center gap-1 text-rofi-yellow text-xs font-bold">
+              <span>Browse fleet</span>
+              <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- View all vehicles link -->
+    <div class="text-center mt-10">
+      <a href="/vehicles" class="inline-flex items-center gap-2 px-8 py-3.5 bg-rofi-black text-white font-black rounded-2xl hover:bg-gray-800 transition-colors shadow-md">
+        View All Vehicles
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ TRUST SECTION -->
+  <div class="bg-rofi-white border-y border-gray-100 py-16">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <div class="flex items-start gap-5 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <div class="w-14 h-14 bg-yellow-50 border-2 border-rofi-yellow rounded-2xl flex items-center justify-center shrink-0 overflow-hidden p-2">
+            <img src="/images/safe-icon.png" alt="Safe" class="w-full h-full object-contain" />
+          </div>
+          <div>
+            <h3 class="font-black text-rofi-black text-base mb-1">Safe &amp; Insured</h3>
+            <p class="text-gray-500 text-sm font-medium">All vehicles are verified and fully insured for every trip.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-5 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <div class="w-14 h-14 bg-yellow-50 border-2 border-rofi-yellow rounded-2xl flex items-center justify-center shrink-0 p-2">
+            <img src="https://img.icons8.com/fluency/96/calendar.png" alt="Flexible" class="w-full h-full object-contain" />
+          </div>
+          <div>
+            <h3 class="font-black text-rofi-black text-base mb-1">Flexible Bookings</h3>
+            <p class="text-gray-500 text-sm font-medium">Modify or extend your rental dates with zero hassle.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-5 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <div class="w-14 h-14 bg-yellow-50 border-2 border-rofi-yellow rounded-2xl flex items-center justify-center shrink-0 p-2">
+            <img src="https://img.icons8.com/fluency/96/headset.png" alt="Support" class="w-full h-full object-contain" />
+          </div>
+          <div>
+            <h3 class="font-black text-rofi-black text-base mb-1">24/7 Support</h3>
+            <p class="text-gray-500 text-sm font-medium">Our team is always on standby to assist you anytime.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ ECOSYSTEM / CTA -->
+  <div class="max-w-7xl mx-auto px-4 py-20">
+    <div class="text-center mb-12">
+      <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-black uppercase tracking-widest rounded-full mb-3">Join RENTX</span>
+      <h2 class="text-4xl font-black text-rofi-black tracking-tight">The RENTX Ecosystem</h2>
+      <p class="text-gray-500 font-medium mt-3">Whether you want to rent or earn — RENTX has you covered.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+      <!-- For Users -->
+      <div class="relative rounded-3xl overflow-hidden bg-rofi-black p-10 flex flex-col items-start text-left shadow-xl group hover:shadow-2xl transition-shadow">
+        <div class="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 -mr-10 -mt-10"
+             style="background:radial-gradient(circle,#FFC107,transparent)"></div>
+        <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6 overflow-hidden border border-white/20">
+          <img src="/images/user-icon.png" alt="Users" class="w-full h-full object-cover" />
+        </div>
+        <span class="text-xs font-black uppercase tracking-widest text-rofi-yellow mb-2">For Renters</span>
+        <h3 class="text-2xl font-black text-white mb-3">Find Your Perfect Ride</h3>
+        <p class="text-gray-400 font-medium mb-8 text-sm leading-relaxed">Browse hundreds of verified vehicles near you. Pay in LKR at transparent rates with zero hidden fees.</p>
+        <a href="/users/register"
+           class="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-[#FFC107] to-[#FF9800] text-white font-black rounded-2xl hover:scale-105 hover:shadow-lg transition-all duration-300 shadow-md mt-auto">
+          Register Now
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+        </a>
+      </div>
+
+      <!-- For Hosts -->
+      <div class="relative rounded-3xl overflow-hidden border-2 border-dashed border-rofi-yellow bg-yellow-50 p-10 flex flex-col items-start text-left shadow-lg group hover:shadow-2xl transition-shadow hover:bg-yellow-100/60">
+        <div class="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 -mr-10 -mt-10"
+             style="background:radial-gradient(circle,#000,transparent)"></div>
+        <div class="w-14 h-14 bg-rofi-yellow rounded-2xl flex items-center justify-center mb-6 overflow-hidden shadow-md">
+          <img src="/images/host-icon.png" alt="Hosts" class="w-full h-full object-cover scale-110" />
+        </div>
+        <span class="text-xs font-black uppercase tracking-widest text-yellow-700 mb-2">For Vehicle Owners</span>
+        <h3 class="text-2xl font-black text-rofi-black mb-3">Become a Host &amp; Earn</h3>
+        <p class="text-gray-600 font-medium mb-8 text-sm leading-relaxed">Your idle vehicle is passive income waiting to happen. List in under 5 minutes — we handle the rest.</p>
+        <a href="/hosts/register"
+           class="inline-flex items-center gap-2 px-7 py-3.5 bg-rofi-black text-white font-black rounded-2xl hover:scale-105 hover:shadow-lg hover:bg-gray-900 transition-all duration-300 shadow-md mt-auto">
+          Become a Host
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ DRIVER CTA BANNER -->
+  <div class="bg-rofi-black py-16 px-4 mb-0">
+    <div class="max-w-4xl mx-auto text-center">
+      <span class="inline-block px-3 py-1 bg-white/10 text-white/70 text-xs font-black uppercase tracking-widest rounded-full mb-5 border border-white/20">Professional Drivers</span>
+      <h2 class="text-4xl font-black text-white mb-4">Need a Driver Too?</h2>
+      <p class="text-gray-400 font-medium mb-8 max-w-xl mx-auto">Book any vehicle with a vetted professional driver. Category-based rates starting from <span class="text-rofi-yellow font-black">LKR 2,500/day</span> — Bikes, Cars, Vans &amp; Trucks.</p>
+      <a href="/vehicles"
+         class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#FFC107] to-[#FF9800] text-white font-black text-base rounded-2xl hover:scale-105 hover:shadow-2xl transition-all duration-300 shadow-lg">
+        Explore &amp; Book with Driver
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+      </a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
