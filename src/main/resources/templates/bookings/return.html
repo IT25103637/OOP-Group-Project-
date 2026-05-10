@@ -1,0 +1,301 @@
+<!-- Component 05: Frontend Templates | Author: Sandaru (it25100632@my.sliit.lk) -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout/base :: layout(~{::div.content})">
+<head>
+    <title>Process Vehicle Return — Admin</title>
+</head>
+<body>
+<div class="content bg-rofi-white min-h-screen py-10">
+    <div class="max-w-6xl mx-auto px-4">
+
+        <!-- ===== PAGE HEADER ===== -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-gray-200 pb-6">
+            <div>
+                <h1 class="text-3xl font-black text-rofi-black tracking-tight">Process Vehicle Return</h1>
+                <p class="text-gray-500 font-bold mt-1 text-sm">
+                    Efficiently process vehicle returns and manage automated late fee assessments 
+                    through our secure administrative portal.
+                </p>
+            </div>
+            <a href="/bookings/list"
+               class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-black text-sm rounded-xl transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Back to List
+            </a>
+        </div>
+
+        <!-- ===== TWO-COLUMN LAYOUT: Form (left) | Result panel (right) ===== -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+
+            <!-- ================================================
+                 LEFT COLUMN: RETURN FORM
+                 ================================================ -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+                <!-- Card header bar -->
+                <div class="px-8 py-5 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-xl bg-rofi-yellow flex items-center justify-center shadow-sm">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+                        </svg>
+                    </span>
+                    <h2 class="text-lg font-black text-rofi-black">Return Details</h2>
+                </div>
+
+                <div class="p-8">
+                    <!-- Error alert -->
+                    <div th:if="${errorMsg}"
+                         class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 font-bold flex items-start gap-3 shadow-sm">
+                        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span th:text="${errorMsg}"></span>
+                    </div>
+
+                    <!-- ===== PROCESS RETURN FORM ===== -->
+                    <form th:action="@{/bookings/process-return}" method="post" class="space-y-6">
+
+                        <!-- Booking ID selector -->
+                        <div>
+                            <label for="bookingIdSelect" class="block text-sm font-black text-gray-700 mb-2">
+                                Select Active Booking
+                            </label>
+                            <!-- Dropdown of active bookings (passed from controller) -->
+                            <select id="bookingIdSelect" name="bookingId" required="required"
+                                    class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm font-bold text-rofi-black focus:ring-2 focus:ring-rofi-yellow focus:outline-none bg-white">
+                                <option value="">— Choose a booking —</option>
+                                <option th:each="ab : ${activeBookings}"
+                                        th:value="${ab.id}"
+                                        th:selected="${(selectedBookingId != null and #strings.equals(selectedBookingId, ab.id)) or (param.bookingId != null and #strings.equals(param.bookingId[0], ab.id))}"
+                                        th:text="${'Booking: ' + ab.id + '  |  Vehicle: ' + ab.vehicleId + '  |  Due: ' + #temporals.format(ab.endDate, 'dd, MMMM, yyyy')}">
+                                </option>
+                            </select>
+                            <p class="mt-1.5 text-xs text-gray-400 font-bold">
+                                Only bookings with no recorded return date appear here.
+                            </p>
+                        </div>
+
+                        <!-- Actual return date picker -->
+                        <div>
+                            <label for="actualReturnDate" class="block text-sm font-black text-gray-700 mb-2">
+                                Actual Return Date
+                            </label>
+                            <!-- SELF-CLOSING INPUT — required by Thymeleaf stability constraint -->
+                            <input type="date" id="actualReturnDate" name="actualReturnDate" required="required"
+                                   class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm font-bold text-rofi-black focus:ring-2 focus:ring-rofi-yellow focus:outline-none" />
+                            <p class="mt-1.5 text-xs text-gray-400 font-bold">
+                                If this date is after the booking end date, a late fee will be calculated.
+                            </p>
+                        </div>
+
+                        <!-- Horizontal rule — SELF-CLOSING as required -->
+                        <hr class="border-gray-200" />
+
+                        <!-- Submit button -->
+                        <button type="submit"
+                                class="w-full py-3.5 bg-rofi-yellow hover:bg-yellow-500 text-rofi-black font-black text-base rounded-xl shadow-sm transition-colors">
+                            Calculate &amp; Process Return
+                        </button>
+
+                    </form><!-- end form -->
+
+                    <!-- ===== ACTIVE BOOKINGS QUICK REFERENCE TABLE ===== -->
+                    <div th:if="${!#lists.isEmpty(activeBookings)}" class="mt-8">
+                        <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Active Bookings Quick Reference</p>
+                        <!-- Horizontal rule — SELF-CLOSING as required -->
+                        <hr class="border-gray-100 mb-3" />
+                        <div class="space-y-2 max-h-52 overflow-y-auto pr-1">
+                            <div th:each="ab : ${activeBookings}"
+                                 class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-2.5 border border-gray-100">
+                                <div class="flex flex-col">
+                                    <span class="font-mono text-xs text-gray-500"
+                                          th:text="${ab.id}"></span>
+                                    <span class="text-xs font-black text-rofi-black"
+                                          th:if="${vehicleService.getVehicleById(ab.vehicleId) != null}"
+                                          th:text="${vehicleService.getVehicleById(ab.vehicleId).brand + ' ' + vehicleService.getVehicleById(ab.vehicleId).model}"></span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-gray-400 font-bold">Due by</span>
+                                    <br />
+                                    <span class="text-xs font-black text-rofi-black"
+                                          th:text="${#temporals.format(ab.endDate, 'dd, MMMM, yyyy')}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty state when no active bookings exist -->
+                    <div th:if="${#lists.isEmpty(activeBookings)}" class="mt-8 text-center py-8">
+                        <svg class="w-10 h-10 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <p class="text-gray-400 font-bold text-sm">No active bookings to return.</p>
+                    </div>
+
+                </div><!-- end card body -->
+            </div><!-- end left column -->
+
+            <!-- ================================================
+                 RIGHT COLUMN: RESULT PANEL
+                 (Hidden when no result; shown after POST)
+                 ================================================ -->
+            <div th:if="${successReturn}" class="flex flex-col gap-6">
+
+                <!-- ── SUCCESS BANNER ── -->
+                <div class="bg-white rounded-3xl shadow-sm border border-green-200 overflow-hidden">
+                    <div class="px-8 py-5 border-b border-green-100 bg-green-50 flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-xl bg-green-500 flex items-center justify-center shadow-sm">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </span>
+                        <h2 class="text-lg font-black text-green-800">Vehicle Successfully Returned</h2>
+                    </div>
+                    <div class="p-8">
+                        <p class="text-sm text-gray-500 font-bold mb-4">
+                            The vehicle has been marked as returned and is now available for new bookings.
+                        </p>
+
+                        <!-- Vehicle & Booking ID strip -->
+                        <div class="bg-gray-50 rounded-xl border border-gray-200 px-5 py-4 mb-6 flex flex-col gap-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-black text-gray-500 uppercase tracking-wider">Vehicle</span>
+                                <span class="text-sm font-black text-rofi-black" th:text="${vehicleLabel}"></span>
+                            </div>
+                            <!-- Horizontal rule — SELF-CLOSING as required -->
+                            <hr class="border-gray-200" />
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-black text-gray-500 uppercase tracking-wider">Booking ID</span>
+                                <span class="font-mono text-xs text-gray-500"
+                                      th:text="${booking.id}"></span>
+                            </div>
+                            <hr class="border-gray-200" />
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-black text-gray-500 uppercase tracking-wider">Return Date</span>
+                                <span class="text-sm font-black text-rofi-black"
+                                      th:text="${booking.returnDate != null ? #temporals.format(booking.returnDate, 'dd, MMMM, yyyy') : '—'}"></span>
+                            </div>
+                            <hr class="border-gray-200" />
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-black text-gray-500 uppercase tracking-wider">Payment Status</span>
+                                <!-- OOP Requirement: display PAID status -->
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-black bg-green-100 text-green-800">PAID</span>
+                            </div>
+                        </div>
+
+                        <!-- ── COST BREAKDOWN ── -->
+                        <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Cost Breakdown</p>
+                        <hr class="border-gray-200 mb-4" />
+
+                        <!-- Base rental cost line -->
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm font-bold text-gray-600">Base Rental Cost</span>
+                            <span class="text-sm font-black text-rofi-black">
+                                LKR <span th:text="${booking.totalCost != null ? #numbers.formatDecimal(booking.totalCost, 1, 'COMMA', 2, 'POINT') : '0.00'}"></span>
+                            </span>
+                        </div>
+
+                        <!-- ── LATE FEE SECTION (only shown when late) ── -->
+                        <div th:if="${daysLate > 0}"
+                             class="rounded-2xl border border-red-200 bg-red-50 p-5 mb-5">
+
+                            <!-- Header row -->
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="flex items-center gap-2 text-sm font-black text-red-700 uppercase tracking-wide">
+                                    <span class="text-base">⚠️</span> Late Return Penalty
+                                </span>
+                                <!-- Fee type badge — shows Standard or Luxury (polymorphism result) -->
+                                <span th:if="${feeType == 'Luxury'}"
+                                      class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-black bg-purple-100 text-purple-700">
+                                    Luxury Tier Rate
+                                </span>
+                                <span th:if="${feeType == 'Standard'}"
+                                      class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-black bg-gray-200 text-gray-700">
+                                    Standard Tier Rate
+                                </span>
+                            </div>
+
+                            <!-- Days late detail -->
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-bold text-red-600">Days Overdue</span>
+                                <span class="text-sm font-black text-red-700"
+                                      th:text="${daysLate} + ' day(s)'"></span>
+                            </div>
+
+                            <!-- Late fee amount -->
+                            <div class="flex justify-between items-center border-t border-red-200 pt-3 mt-1">
+                                <span class="text-sm font-black text-red-700">Late Fee Applied</span>
+                                <span class="text-xl font-black text-red-700">
+                                    + LKR <span th:text="${lateFee != null ? #numbers.formatDecimal(lateFee, 1, 'COMMA', 2, 'POINT') : '0.00'}"></span>
+                                </span>
+                            </div>
+
+                            <!-- Polymorphism explanation note for academic context -->
+                            <p class="mt-3 text-xs font-bold text-red-500 border-t border-red-100 pt-2">
+                                <span th:if="${feeType == 'Luxury'}">
+                                    Applied via <strong>LuxuryVehicleFee</strong> (2.5× daily rate per late day).
+                                </span>
+                                <span th:if="${feeType == 'Standard'}">
+                                    Applied via <strong>StandardVehicleFee</strong> (1.2× daily rate per late day).
+                                </span>
+                            </p>
+                        </div>
+
+                        <!-- No late fee confirmation -->
+                        <div th:if="${daysLate == 0}"
+                             class="rounded-2xl border border-green-200 bg-green-50 p-4 mb-5 flex items-center gap-3">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-sm font-black text-green-700">Returned on time — no late fee applied.</p>
+                        </div>
+
+                        <!-- ── TOTAL AMOUNT PAID ── -->
+                        <hr class="border-dashed border-gray-300 my-4" />
+                        <div class="flex justify-between items-end">
+                            <span class="text-sm font-black text-gray-500 uppercase tracking-widest">Total Amount</span>
+                            <span class="text-3xl font-black text-rofi-black">
+                                LKR <span th:text="${#numbers.formatDecimal(booking.totalCost + booking.lateFee, 1, 'COMMA', 2, 'POINT')}"></span>
+                            </span>
+                        </div>
+
+                    </div><!-- end result card body -->
+                </div><!-- end result card -->
+
+                <!-- ── ACTION BUTTONS ── -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <a href="/admin/dashboard"
+                       class="flex-1 py-3.5 bg-rofi-black hover:bg-gray-900 text-rofi-yellow font-black text-sm rounded-xl text-center transition-colors shadow-sm">
+                        Go to Dashboard
+                    </a>
+                    <a href="/bookings/list"
+                       class="flex-1 py-3.5 bg-rofi-yellow hover:bg-yellow-500 text-rofi-black font-black text-sm rounded-xl text-center transition-colors shadow-sm">
+                        Back to Bookings
+                    </a>
+                    <a th:href="@{/bookings/receipt/{id}(id=${booking.id})}"
+                       class="flex-1 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-black text-sm rounded-xl text-center transition-colors">
+                        📄 View Receipt
+                    </a>
+                </div>
+
+            </div><!-- end right column (result panel) -->
+
+            <!-- Right column placeholder when no result yet -->
+            <div th:if="${successReturn == null or successReturn == false}"
+                 class="hidden lg:flex flex-col items-center justify-center bg-white rounded-3xl shadow-sm border border-gray-200 p-12 text-center">
+                <p class="text-lg font-black text-gray-400 uppercase tracking-widest">summary will display here</p>
+            </div>
+
+        </div><!-- end grid -->
+
+    </div>
+</div>
+</body>
+</html>

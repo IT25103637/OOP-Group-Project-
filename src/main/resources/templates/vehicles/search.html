@@ -1,0 +1,215 @@
+<!-- Component 05: Frontend Templates | Author: Sandaru (it25100632@my.sliit.lk) -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout/base :: layout(~{::div.content})">
+<head>
+    <title>Search Results</title>
+</head>
+<body>
+<div class="content bg-rofi-white min-h-screen py-10">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row gap-8">
+        
+        <!-- Left Sidebar: Refine Search (Member 04 requirement) -->
+        <div class="w-full md:w-1/4">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 sticky top-24">
+                <h3 class="text-xl font-black text-rofi-black mb-6">Refine Search</h3>
+                
+                <form th:action="@{/vehicles/search}" method="get" class="space-y-6">
+                    
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Location</label>
+                        <input type="text" name="location" th:value="${location}" placeholder="Anywhere"
+                               class="w-full border-b-2 border-gray-200 py-2 text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow transition-colors">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Vehicle Type</label>
+                        <div class="space-y-2 mt-3">
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="radio" name="type" value="" th:checked="${type == null || type == ''}" class="form-radio text-rofi-yellow focus:ring-rofi-yellow h-4 w-4">
+                                <span class="text-sm font-bold text-gray-700 group-hover:text-rofi-black">All Types</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="radio" name="type" value="CAR" th:checked="${type == 'CAR'}" class="form-radio text-rofi-yellow focus:ring-rofi-yellow h-4 w-4">
+                                <span class="text-sm font-bold text-gray-700 group-hover:text-rofi-black">Cars</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="radio" name="type" value="BIKE" th:checked="${type == 'BIKE'}" class="form-radio text-rofi-yellow focus:ring-rofi-yellow h-4 w-4">
+                                <span class="text-sm font-bold text-gray-700 group-hover:text-rofi-black">Bikes</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="radio" name="type" value="VAN" th:checked="${type == 'VAN'}" class="form-radio text-rofi-yellow focus:ring-rofi-yellow h-4 w-4">
+                                <span class="text-sm font-bold text-gray-700 group-hover:text-rofi-black">Vans</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="radio" name="type" value="TRUCK" th:checked="${type == 'TRUCK'}" class="form-radio text-rofi-yellow focus:ring-rofi-yellow h-4 w-4">
+                                <span class="text-sm font-bold text-gray-700 group-hover:text-rofi-black">Trucks</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Max Price (LKR)</label>
+                        <input type="range" name="maxPrice" min="0" max="200000" step="5000"
+                               th:value="${maxPrice != null ? maxPrice : 200000}"
+                               oninput="updatePrice(this.value)"
+                               class="w-full accent-rofi-yellow" />
+                        <div class="text-sm font-bold text-rofi-black mt-2 text-right">
+                            LKR <span id="priceOutput"
+                                      th:text="${maxPrice != null ? maxPrice : 'No limit'}">No limit</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-rofi-yellow hover:bg-yellow-500 text-white font-black rounded-lg transition-colors shadow-sm">
+                        Apply Filters
+                    </button>
+                    <a href="/vehicles/search" class="block text-center w-full py-3 text-gray-500 text-sm font-bold hover:text-rofi-black transition-colors">
+                        Clear All
+                    </a>
+                </form>
+                <script>
+                    function updatePrice(val) {
+                        var el = document.getElementById('priceOutput');
+                        el.innerText = (parseInt(val) >= 200000) ? 'No limit' : val;
+                    }
+                </script>
+            </div>
+        </div>
+
+        <!-- Right Side: Search Results -->
+        <div class="w-full md:w-3/4">
+            
+            <!-- Feature 4: Sorting Header — submits current filters + new sort order on change -->
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-black text-rofi-black">
+                    <span th:text="${vehicles.size()}"></span> Results Found
+                </h2>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Sort:</span>
+                    <!-- Hidden form that carries all filter params + the selected sort -->
+                    <form id="sortForm" th:action="@{/vehicles/search}" method="get">
+                        <input type="hidden" name="type"     th:value="${type}" />
+                        <input type="hidden" name="location" th:value="${location}" />
+                        <input type="hidden" name="minPrice" th:value="${minPrice}" />
+                        <input type="hidden" name="maxPrice" th:value="${maxPrice}" />
+                        <input type="hidden" name="hasDriver" th:value="${hasDriver}" />
+                        <select name="sort"
+                                onchange="document.getElementById('sortForm').submit()"
+                                class="border border-gray-300 rounded px-3 py-1.5 text-sm font-bold text-rofi-black bg-white focus:outline-none focus:border-rofi-yellow">
+                            <option value=""          th:selected="${sort == null or sort == ''}">Recommended</option>
+                            <option value="price_asc" th:selected="${sort == 'price_asc'}">Price: Low to High</option>
+                            <option value="price_desc" th:selected="${sort == 'price_desc'}">Price: High to Low</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Vertically Stacked List (Same as list.html) -->
+            <div class="space-y-6">
+                <div th:each="v : ${vehicles}" class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col md:flex-row transition-shadow hover:shadow-md relative">
+                    <div class="absolute top-4 left-4 z-10">
+                        <span th:if="${v.availableStatus}" class="px-3 py-1 bg-green-500 text-white text-xs font-bold uppercase tracking-wide rounded-md shadow-sm">Available</span>
+                        <span th:unless="${v.availableStatus}" class="px-3 py-1 bg-gray-500 text-white text-xs font-bold uppercase tracking-wide rounded-md shadow-sm">Rented</span>
+                    </div>
+                    <!-- Left: Image Area -->
+                    <div class="w-full md:w-48 h-48 md:h-auto bg-gray-100 flex items-center justify-center border-b md:border-b-0 md:border-r border-gray-200 shrink-0 overflow-hidden relative">
+                        <!-- Custom uploaded image (host-submitted vehicles) -->
+                        <img th:if="${v.imageName != null and !#strings.isEmpty(v.imageName)}"
+                             th:src="@{/uploads/{img}(img=${v.imageName})}"
+                             alt="Vehicle" class="w-full h-full object-cover" />
+
+                        <!-- Benz: check brand OR model -->
+                        <img th:if="${(v.brand != null and #strings.containsIgnoreCase(v.brand, 'Benz')) or (v.model != null and #strings.containsIgnoreCase(v.model, 'Benz'))}"
+                             th:src="@{/images/benz-c.jpg}" alt="Benz"
+                             class="w-full h-full object-cover" />
+
+                        <!-- Audi: check brand OR model -->
+                        <img th:if="${(v.brand != null and #strings.containsIgnoreCase(v.brand, 'Audi')) or (v.model != null and #strings.containsIgnoreCase(v.model, 'Audi'))}"
+                             th:src="@{/images/audi.jpg}" alt="Audi"
+                             class="w-full h-full object-cover" />
+
+                        <!-- Prius: check brand OR model -->
+                        <img th:if="${(v.brand != null and #strings.containsIgnoreCase(v.brand, 'Prius')) or (v.model != null and #strings.containsIgnoreCase(v.model, 'Prius'))}"
+                             th:src="@{/images/prius.jpg}" alt="Prius"
+                             class="w-full h-full object-cover" />
+
+                        <!-- Pulsar/Pulser: check brand OR model -->
+                        <img th:if="${(v.brand != null and (#strings.containsIgnoreCase(v.brand, 'Pulsar') or #strings.containsIgnoreCase(v.brand, 'Pulser'))) or (v.model != null and (#strings.containsIgnoreCase(v.model, 'Pulsar') or #strings.containsIgnoreCase(v.model, 'Pulser')))}"
+                             th:src="@{/images/pulsar.jpg}" alt="Pulsar"
+                             class="w-full h-full object-cover" />
+
+                        <!-- BMW: check brand OR model -->
+                        <img th:if="${(v.brand != null and #strings.containsIgnoreCase(v.brand, 'BMW')) or (v.model != null and #strings.containsIgnoreCase(v.model, 'BMW'))}"
+                             th:src="@{/images/bmw.jpg}" alt="BMW"
+                             class="w-full h-full object-cover" />
+
+                        <!-- HiAce: check brand OR model -->
+                        <img th:if="${(v.brand != null and #strings.containsIgnoreCase(v.brand, 'HiAce')) or (v.model != null and #strings.containsIgnoreCase(v.model, 'HiAce'))}"
+                             th:src="@{/images/hiace.jpg}" alt="HiAce"
+                             class="w-full h-full object-cover" />
+
+                        <!-- Ashok/Leyland: check brand OR model -->
+                        <img th:if="${(v.brand != null and (#strings.containsIgnoreCase(v.brand, 'Ashok') or #strings.containsIgnoreCase(v.brand, 'Leyland'))) or (v.model != null and (#strings.containsIgnoreCase(v.model, 'Ashok') or #strings.containsIgnoreCase(v.model, 'Leyland')))}"
+                             th:src="@{/images/ashok.jpg}" alt="Ashok Leyland"
+                             class="w-full h-full object-cover" />
+
+                        <!-- Fallback: if none of the above matched -->
+                        <img th:unless="${(v.imageName != null and !#strings.isEmpty(v.imageName)) or
+                                 (v.brand != null and (#strings.containsIgnoreCase(v.brand, 'Benz') or #strings.containsIgnoreCase(v.brand, 'Audi') or #strings.containsIgnoreCase(v.brand, 'Prius') or #strings.containsIgnoreCase(v.brand, 'Pulsar') or #strings.containsIgnoreCase(v.brand, 'Pulser') or #strings.containsIgnoreCase(v.brand, 'BMW') or #strings.containsIgnoreCase(v.brand, 'HiAce') or #strings.containsIgnoreCase(v.brand, 'Ashok') or #strings.containsIgnoreCase(v.brand, 'Leyland')))
+                                 or
+                                 (v.model != null and (#strings.containsIgnoreCase(v.model, 'Benz') or #strings.containsIgnoreCase(v.model, 'Audi') or #strings.containsIgnoreCase(v.model, 'Prius') or #strings.containsIgnoreCase(v.model, 'Pulsar') or #strings.containsIgnoreCase(v.model, 'Pulser') or #strings.containsIgnoreCase(v.model, 'BMW') or #strings.containsIgnoreCase(v.model, 'HiAce') or #strings.containsIgnoreCase(v.model, 'Ashok') or #strings.containsIgnoreCase(v.model, 'Leyland')))
+                             }"
+                             th:src="@{/images/user-icon.png}" alt="Vehicle"
+                             class="w-full h-full object-contain p-6" />
+
+                        <!-- Vehicle type badge -->
+                        <span class="absolute bottom-2 left-2 px-2 py-0.5 bg-white bg-opacity-80 text-gray-700 text-[10px] font-black uppercase tracking-widest rounded shadow-sm"
+                              th:text="${v.type}">TYPE</span>
+                    </div>
+                    <div class="flex-1 p-6 flex flex-col justify-center">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-xl font-black text-rofi-black mb-1" th:text="${v.brand + ' ' + v.model}">Brand Model</h3>
+                            <span class="px-2.5 py-1 bg-yellow-100 text-yellow-800 text-[10px] font-black uppercase tracking-widest rounded-full" th:text="${v.type}">TYPE</span>
+                        </div>
+                        <div class="flex items-center text-sm font-bold text-gray-500 mb-3">
+                            <svg class="w-4 h-4 mr-1 text-rofi-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                            <span th:text="${v.location}">Location</span>
+                        </div>
+                        <p class="text-gray-600 text-sm font-medium line-clamp-2 mb-2" th:text="${v.getVehicleDescription()}">Description</p>
+                    </div>
+                    <!-- View Details + Book Now / Unavailable -->
+                    <div class="w-full md:w-48 bg-gray-50 p-5 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-gray-200 gap-2">
+                        <div class="text-center mb-2">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Per Day</p>
+                            <div class="text-2xl font-black text-rofi-black">
+                                <span class="text-sm">LKR</span> <span th:text="${v.pricePerDay != null ? #numbers.formatDecimal(v.pricePerDay, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                            </div>
+                        </div>
+                        <!-- View Details for all users -->
+                        <a th:href="@{/vehicles/{id}(id=${v.id})}"
+                           class="w-full text-center py-2 bg-white border border-gray-200 text-gray-700 text-sm font-black rounded-lg hover:bg-gray-50 transition-colors">
+                            View Details
+                        </a>
+                        <a th:if="${v.availableStatus and session.loggedInUser != null and session.loggedInUser.role.name() == 'CUSTOMER'}"
+                           th:href="@{/bookings/new/{id}(id=${v.id}, hasDriver=${hasDriver})}"
+                           class="w-full text-center py-2.5 bg-rofi-yellow text-rofi-black font-black rounded-lg hover:bg-yellow-500 transition-colors shadow-sm text-sm">
+                            Book Now
+                        </a>
+                        <button th:unless="${v.availableStatus}" class="w-full py-2.5 bg-gray-300 text-gray-500 font-black text-sm rounded-lg cursor-not-allowed">
+                            Unavailable
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div th:if="${#lists.isEmpty(vehicles)}" class="bg-white p-12 rounded-2xl text-center border-2 border-dashed border-gray-300">
+                    <span class="text-5xl mb-4 block">🏜️</span>
+                    <h3 class="text-2xl font-black text-rofi-black">No matches found</h3>
+                    <p class="text-gray-500 font-bold mt-2">Try adjusting your filters.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
