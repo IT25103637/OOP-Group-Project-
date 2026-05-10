@@ -1,0 +1,173 @@
+<!-- Component 05: Frontend Templates | Author: Sandaru (it25100632@my.sliit.lk) -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout/base :: layout(~{::div.content})">
+<head>
+    <title>Booking History</title>
+</head>
+<body>
+<div class="content bg-rofi-white min-h-screen py-10">
+    <div class="max-w-7xl mx-auto px-4">
+        
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4 border-b border-gray-200 pb-4">
+            <div>
+                <h2 class="text-3xl font-black text-rofi-black tracking-tight" th:if="${session.loggedInUser.role.name() == 'ADMIN'}">All Bookings</h2>
+                <h2 class="text-3xl font-black text-rofi-black tracking-tight" th:if="${session.loggedInUser.role.name() == 'CUSTOMER'}">My Bookings</h2>
+                <p class="text-gray-500 font-bold mt-1">View and manage rental records in LKR.</p>
+            </div>
+        </div>
+
+        <div th:if="${param.success}" class="mb-6 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700 font-bold flex items-center shadow-sm">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            Booking created successfully!
+        </div>
+        <div th:if="${param.cancelled}" class="mb-6 p-4 rounded-xl bg-orange-50 border border-orange-200 text-orange-700 font-bold flex items-center shadow-sm">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            Booking cancelled successfully. The vehicle is now available again.
+        </div>
+        <div th:if="${param.error}" class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 font-bold flex items-center shadow-sm">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span th:text="${param.error}"></span>
+        </div>
+
+        <!-- Extend success banner -->
+        <div th:if="${param.extended}" class="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 font-bold flex items-center shadow-sm">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            Booking end date extended successfully!
+        </div>
+
+        <!-- Extend error banner -->
+        <div th:if="${param.extendError}" class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 font-bold flex items-center shadow-sm">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-12.728 12.728M5.636 5.636l12.728 12.728" /></svg>
+            <span>
+                <span th:if="${param.extendError == 'InvalidDate'}">Extension failed: the new end date must be after the current end date.</span>
+                <span th:if="${param.extendError == 'AlreadyReturned'}">Extension failed: this booking has already been returned.</span>
+                <span th:if="${param.extendError == 'BookingNotFound'}">Extension failed: booking record could not be located.</span>
+                <span th:if="${param.extendError == 'Unauthorized'}">Extension failed: you are not authorised to modify this booking.</span>
+            </span>
+        </div>
+
+        <!-- Data Table -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm whitespace-nowrap">
+                    <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-black tracking-wider border-b border-gray-200">
+                    <tr>
+                        <th class="px-6 py-4">#</th>
+                        <th class="px-6 py-4" th:if="${session.loggedInUser.role.name() == 'ADMIN'}">Customer ID</th>
+                        <th class="px-6 py-4">Vehicle ID</th>
+                        <th class="px-6 py-4">Duration</th>
+                        <th class="px-6 py-4">Return Date</th>
+                        <th class="px-6 py-4">Base Cost (LKR)</th>
+                        <th class="px-6 py-4">Late Fee (LKR)</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-rofi-black font-bold">
+                    
+                    <tr th:each="b, iterStat : ${bookings}" class="hover:bg-yellow-50 transition-colors">
+                        <td class="px-6 py-5 text-gray-400" th:text="${iterStat.count}"></td>
+
+                        <td th:if="${session.loggedInUser.role.name() == 'ADMIN'}" class="px-6 py-5 font-mono text-xs text-gray-500">
+                            <span th:text="${b.userId}"></span>
+                        </td>
+
+                        <td class="px-6 py-5 font-mono text-xs text-gray-500">
+                            <span th:text="${b.vehicleId}"></span>
+                        </td>
+
+                        <td class="px-6 py-5">
+                            <div class="flex items-center">
+                                <span th:text="${b.startDate != null ? #temporals.format(b.startDate, 'dd, MMMM, yyyy') : ''}"></span>
+                                <span class="mx-2 text-gray-400">→</span>
+                                <span th:text="${b.endDate != null ? #temporals.format(b.endDate, 'dd, MMMM, yyyy') : ''}"></span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-5">
+                            <span th:if="${b.returnDate != null}" th:text="${#temporals.format(b.returnDate, 'dd, MMMM, yyyy')}"></span>
+                            <span th:if="${b.returnDate == null}" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-black bg-orange-100 text-orange-700">
+                                Ongoing
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-5 font-black">LKR <span th:text="${b.totalCost != null ? #numbers.formatDecimal(b.totalCost, 1, 'COMMA', 2, 'POINT') : '0.00'}"></span></td>
+
+                        <td class="px-6 py-5">
+                            <span th:if="${b.lateFee > 0}" class="text-red-600 font-black bg-red-50 px-2.5 py-1 rounded-md" th:text="'+LKR ' + (${b.lateFee != null ? #numbers.formatDecimal(b.lateFee, 1, 'COMMA', 2, 'POINT') : '0.00'})"></span>
+                            <span th:if="${b.lateFee == 0}" class="text-gray-300">—</span>
+                        </td>
+
+                        <td class="px-6 py-5">
+                            <span th:if="${b.paymentStatus.name() == 'PAID'}" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-black bg-green-100 text-green-800">PAID</span>
+                            <span th:if="${b.paymentStatus.name() == 'PENDING'}" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-black bg-gray-100 text-gray-600">PENDING</span>
+                        </td>
+
+                        <td class="px-6 py-5 text-right">
+                            <!-- ADMIN: Process Return -->
+                            <a th:if="${session.loggedInUser.role.name() == 'ADMIN' and b.returnDate == null}"
+                               th:href="@{/bookings/return/{id}(id=${b.id})}"
+                               class="inline-flex items-center px-4 py-2 bg-rofi-yellow hover:bg-yellow-500 text-rofi-black text-xs font-black rounded-lg transition-colors shadow-sm"
+                               onclick="return confirm('Process this return? Late fees will be calculated in LKR.');">Process Return</a>
+
+                            <!-- COMPLETED: PDF Receipt for everyone -->
+                            <span th:if="${b.returnDate != null}" class="flex justify-end items-center gap-2">
+                                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                <span class="text-gray-500 text-xs font-black">Completed</span>
+                                <a th:href="@{/bookings/receipt/{id}(id=${b.id})}"
+                                   class="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-black rounded-lg transition-colors">
+                                    &#x1F4C4; PDF Receipt
+                                </a>
+                            </span>
+
+                            <!-- CUSTOMER PENDING: Pay Now + Cancel + Extend Rental -->
+                            <div th:if="${session.loggedInUser.role.name() == 'CUSTOMER' and b.paymentStatus.name() == 'PENDING' and b.returnDate == null}"
+                                 class="flex flex-col gap-1.5 items-end">
+                                <a th:href="@{/checkout/{id}(id=${b.id})}"
+                                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#FFC107] to-[#FF9800] text-white text-xs font-black rounded-lg shadow-sm hover:shadow-md transition-all">
+                                    &#x1F4B3; Pay Now
+                                </a>
+                                <form th:action="@{/bookings/cancel/{id}(id=${b.id})}" method="post"
+                                      onsubmit="return confirm('Cancel this booking? This cannot be undone.');">
+                                    <button type="submit"
+                                            class="inline-flex items-center gap-1 px-4 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-black rounded-lg border border-red-200 transition-colors">
+                                        &#x2715; Cancel
+                                    </button>
+                                </form>
+                                <a th:href="@{/bookings/extend/{id}(id=${b.id})}"
+                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-800 text-xs font-black rounded-lg transition-all duration-150">
+                                    &#x1F4C5; Extend Rental
+                                </a>
+                            </div>
+
+                            <!-- CUSTOMER PAID / active: Awaiting Return + Extend Rental -->
+                            <div th:if="${session.loggedInUser.role.name() == 'CUSTOMER' and b.returnDate == null and b.paymentStatus.name() != 'PENDING'}"
+                                 class="flex flex-col gap-2 items-end">
+                                <span class="text-gray-400 text-xs font-black">Awaiting Return</span>
+                                <a th:href="@{/bookings/extend/{id}(id=${b.id})}"
+                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-800 text-xs font-black rounded-lg transition-all duration-150">
+                                    &#x1F4C5; Extend Rental
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Empty State -->
+                    <tr th:if="${#lists.isEmpty(bookings)}">
+                        <td colspan="10" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center justify-center text-gray-400">
+                                <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                                <span class="font-black">No bookings found</span>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
