@@ -1,0 +1,219 @@
+<!-- Component 05: Frontend Templates | Author: Sandaru (it25100632@my.sliit.lk) -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout/base :: layout(~{::div.content})">
+<head>
+    <title>Secure Checkout</title>
+</head>
+<body>
+<div class="content bg-rofi-white min-h-screen py-12">
+    <div class="max-w-5xl mx-auto px-4">
+
+        <!-- Page Header -->
+        <div class="text-center mb-10">
+            <h2 class="text-4xl font-black text-rofi-black tracking-tight">Secure Checkout</h2>
+            <p class="text-gray-500 font-bold mt-2 text-sm">Your payment is encrypted and safe. All transactions are processed securely.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-8 items-start">
+
+            <!-- ===================== LEFT: Payment Form ===================== -->
+            <div class="md:col-span-3">
+                <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+
+                    <!-- Card Header -->
+                    <div class="bg-gradient-to-r from-[#FFC107] to-[#FF9800] p-6 flex items-center justify-between">
+                        <div>
+                            <p class="text-white text-xs font-bold uppercase tracking-widest opacity-80">Secure Payment</p>
+                            <h3 class="text-white text-2xl font-black mt-1">Card Details</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <!-- Visa icon SVG -->
+                            <div class="bg-white rounded-lg px-3 py-1.5 text-xs font-black text-blue-800 shadow-sm">VISA</div>
+                            <div class="bg-white rounded-lg px-3 py-1.5 text-xs font-black text-red-600 shadow-sm">MC</div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Form — all inputs use name attributes for POST -->
+                    <form th:action="@{/process-payment}" method="post" class="p-8 space-y-6">
+
+                        <!-- Hidden: pass bookingId and grand total to controller -->
+                        <input type="hidden" name="bookingId"
+                               th:value="${booking != null ? booking.id : ''}" />
+                        <input type="hidden" name="totalAmountLKR"
+                               th:value="${booking != null ? booking.grandTotal : '0'}" />
+
+                        <!-- Customer Info Section -->
+                        <div>
+                            <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Customer Information</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Full Name</label>
+                                    <input type="text" name="customerName" placeholder="e.g. Kasun Perera"
+                                           required
+                                           class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow focus:ring-2 focus:ring-yellow-200 transition-all" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Mobile Number</label>
+                                    <input type="tel" name="mobileNumber" placeholder="+94 7X XXX XXXX"
+                                           required
+                                           class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow focus:ring-2 focus:ring-yellow-200 transition-all" />
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Email Address</label>
+                                <input type="email" name="email" placeholder="you@example.com"
+                                       required
+                                       class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow focus:ring-2 focus:ring-yellow-200 transition-all" />
+                            </div>
+                        </div>
+
+                        <hr class="border-gray-100" />
+
+                        <!-- Card Details Section (Simulated) -->
+                        <div>
+                            <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Card Details (Simulated)</h4>
+
+                            <!-- Card Number -->
+                            <div class="mb-4">
+                                <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Card Number</label>
+                                <div class="relative">
+                                    <input type="text" name="cardNumber"
+                                           placeholder="1234 5678 9012 3456"
+                                           maxlength="19"
+                                           required
+                                           class="w-full px-4 py-3 pl-12 rounded-xl border border-gray-200 bg-gray-50 text-rofi-black font-bold tracking-widest focus:outline-none focus:border-rofi-yellow focus:ring-2 focus:ring-yellow-200 transition-all" />
+                                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300">
+                                        <!-- Card icon -->
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Expiry and CVV -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Expiry Date</label>
+                                    <input type="text" name="expiryDate"
+                                           placeholder="MM / YY" maxlength="7"
+                                           required
+                                           class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-rofi-black font-bold tracking-widest focus:outline-none focus:border-rofi-yellow focus:ring-2 focus:ring-yellow-200 transition-all" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">CVV</label>
+                                    <input type="password" name="cvv"
+                                           placeholder="•••" maxlength="4"
+                                           required
+                                           class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-rofi-black font-bold tracking-widest focus:outline-none focus:border-rofi-yellow focus:ring-2 focus:ring-yellow-200 transition-all" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit"
+                                class="w-full py-4 bg-gradient-to-r from-[#FFC107] to-[#FF9800] hover:from-[#FFB300] hover:to-[#F57C00] text-white text-lg font-black rounded-2xl transition-all shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            Pay Now
+                        </button>
+
+                        <p class="text-center text-xs text-gray-400 font-medium">
+                            🔒 Your transaction is simulated and secure. No real charges will be made.
+                        </p>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- ===================== RIGHT: Order Summary ===================== -->
+            <div class="md:col-span-2 space-y-6">
+
+                <!-- Vehicle Summary Card -->
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+                    <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-5">Booking Summary</h4>
+
+                    <!-- Vehicle Name -->
+                    <div th:if="${vehicle != null}" class="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
+                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden border border-gray-200 shrink-0">
+                            <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'BMW')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'BMW'))}"
+                                 th:src="@{/images/bmw.jpg}" alt="BMW" class="w-full h-full object-cover" />
+                            <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'Prius')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'Prius'))}"
+                                 th:src="@{/images/prius.jpg}" alt="Prius" class="w-full h-full object-cover" />
+                            <img th:if="${(vehicle.brand != null and (#strings.containsIgnoreCase(vehicle.brand, 'Pulsar') or #strings.containsIgnoreCase(vehicle.brand, 'Pulser'))) or (vehicle.model != null and (#strings.containsIgnoreCase(vehicle.model, 'Pulsar') or #strings.containsIgnoreCase(vehicle.model, 'Pulser')))}"
+                                 th:src="@{/images/pulsar.jpg}" alt="Pulsar" class="w-full h-full object-cover" />
+                            <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'HiAce')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'HiAce'))}"
+                                 th:src="@{/images/hiace.jpg}" alt="HiAce" class="w-full h-full object-cover" />
+                            <img th:if="${(vehicle.brand != null and (#strings.containsIgnoreCase(vehicle.brand, 'Ashok') or #strings.containsIgnoreCase(vehicle.brand, 'Leyland'))) or (vehicle.model != null and (#strings.containsIgnoreCase(vehicle.model, 'Ashok') or #strings.containsIgnoreCase(vehicle.model, 'Leyland')))}"
+                                 th:src="@{/images/ashok.jpg}" alt="Ashok" class="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-yellow-700 bg-yellow-100 px-2 py-0.5 rounded-full"
+                                  th:text="${vehicle.type}">TYPE</span>
+                            <h3 class="text-lg font-black text-rofi-black mt-1"
+                                th:text="${vehicle.brand + ' ' + vehicle.model}">Vehicle Name</h3>
+                        </div>
+                    </div>
+
+                    <!-- Booking Dates -->
+                    <div th:if="${booking != null}" class="space-y-3 text-sm">
+                        <div class="flex justify-between font-bold">
+                            <span class="text-gray-500">Pick-up Date</span>
+                            <span class="text-rofi-black"
+                                  th:text="${booking.startDate != null ? #temporals.format(booking.startDate, 'dd, MMMM, yyyy') : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="flex justify-between font-bold">
+                            <span class="text-gray-500">Return Date</span>
+                            <span class="text-rofi-black"
+                                  th:text="${booking.endDate != null ? #temporals.format(booking.endDate, 'dd, MMMM, yyyy') : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="flex justify-between font-bold">
+                            <span class="text-gray-500">Driver Service</span>
+                            <span th:if="${booking.hasDriver}"
+                                  class="text-green-600">Included</span>
+                            <span th:unless="${booking.hasDriver}"
+                                  class="text-gray-400">Not Included</span>
+                        </div>
+                        <!-- Driver Charge line item -->
+                        <div th:if="${booking.hasDriver and booking.driverCharge > 0}"
+                             class="flex justify-between font-bold">
+                            <span class="text-gray-500">👤 Driver Allowance</span>
+                            <span class="text-amber-700"
+                                  th:text="${'+LKR ' + #numbers.formatDecimal(booking.driverCharge, 1, 'COMMA', 2, 'POINT')}">+LKR 0.00</span>
+                        </div>
+                        <!-- Base Fare line item -->
+                        <div class="flex justify-between font-bold">
+                            <span class="text-gray-500">Base Vehicle Fare</span>
+                            <span class="text-rofi-black"
+                                  th:text="${'LKR ' + #numbers.formatDecimal(booking.totalCost - booking.driverCharge, 1, 'COMMA', 2, 'POINT')}">LKR 0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Amount Card -->
+                <div class="bg-rofi-black rounded-3xl p-6 text-white">
+                    <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Total Amount Due</p>
+                    <div class="text-4xl font-black text-rofi-yellow">
+                        LKR <span th:text="${booking != null ? #numbers.formatDecimal(booking.grandTotal, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                    </div>
+                    <p class="text-xs text-gray-500 font-bold mt-3">Inclusive of all taxes and service charges.</p>
+                </div>
+
+                <!-- Security Badges -->
+                <div class="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4">
+                    <div class="text-3xl">🛡️</div>
+                    <div>
+                        <h4 class="text-rofi-black font-black text-sm">SSL Encrypted</h4>
+                        <p class="text-gray-400 text-xs font-medium">256-bit AES encryption on all data.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
