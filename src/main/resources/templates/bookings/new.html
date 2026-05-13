@@ -1,0 +1,165 @@
+<!-- Component 05: Frontend Templates | Author: Sandaru (it25100632@my.sliit.lk) -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout/base :: layout(~{::div.content})">
+<head>
+    <title>Checkout</title>
+</head>
+<body>
+<div class="content flex justify-center py-12 bg-rofi-white min-h-[80vh]">
+    <div class="w-full max-w-2xl px-4">
+        
+        <!-- Clean White Card -->
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+            
+            <div class="p-8 text-center border-b border-gray-100">
+                <h2 class="text-3xl font-black text-rofi-black tracking-tight">Checkout</h2>
+                <p class="text-gray-500 font-bold text-sm mt-1">Review your vehicle and select dates.</p>
+            </div>
+
+            <div th:if="${error}" class="m-8 mb-0 p-4 rounded-xl bg-red-50 text-red-700 font-bold text-center border border-red-200">
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Centered Vehicle Section -->
+            <div class="p-10 flex flex-col items-center text-center">
+                <!-- Larger Centered Image -->
+                <div class="w-64 h-48 bg-gray-100 rounded-3xl flex items-center justify-center shrink-0 border border-gray-200 shadow-xl overflow-hidden relative mb-8 transition-transform hover:scale-105 duration-500">
+
+                    <!-- Custom uploaded image (host-submitted vehicles) — checked FIRST -->
+                    <img th:if="${vehicle.imageName != null and !#strings.isEmpty(vehicle.imageName)}"
+                         th:src="@{/uploads/{img}(img=${vehicle.imageName})}"
+                         alt="Vehicle" class="w-full h-full object-cover" />
+
+                    <!-- Benz -->
+                    <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'Benz')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'Benz'))}"
+                         th:src="@{/images/benz-c.jpg}" alt="Benz" class="w-full h-full object-cover" />
+                    <!-- Audi -->
+                    <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'Audi')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'Audi'))}"
+                         th:src="@{/images/audi.jpg}" alt="Audi" class="w-full h-full object-cover" />
+                    <!-- Prius -->
+                    <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'Prius')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'Prius'))}"
+                         th:src="@{/images/prius.jpg}" alt="Prius" class="w-full h-full object-cover" />
+                    <!-- Pulsar/Pulser -->
+                    <img th:if="${(vehicle.brand != null and (#strings.containsIgnoreCase(vehicle.brand, 'Pulsar') or #strings.containsIgnoreCase(vehicle.brand, 'Pulser'))) or (vehicle.model != null and (#strings.containsIgnoreCase(vehicle.model, 'Pulsar') or #strings.containsIgnoreCase(vehicle.model, 'Pulser')))}"
+                         th:src="@{/images/pulsar.jpg}" alt="Pulsar" class="w-full h-full object-cover" />
+                    <!-- BMW -->
+                    <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'BMW')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'BMW'))}"
+                         th:src="@{/images/bmw.jpg}" alt="BMW" class="w-full h-full object-cover" />
+                    <!-- HiAce -->
+                    <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'HiAce')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'HiAce'))}"
+                         th:src="@{/images/hiace.jpg}" alt="HiAce" class="w-full h-full object-cover" />
+                    <!-- Ashok/Leyland -->
+                    <img th:if="${(vehicle.brand != null and (#strings.containsIgnoreCase(vehicle.brand, 'Ashok') or #strings.containsIgnoreCase(vehicle.brand, 'Leyland'))) or (vehicle.model != null and (#strings.containsIgnoreCase(vehicle.model, 'Ashok') or #strings.containsIgnoreCase(vehicle.model, 'Leyland')))}"
+                         th:src="@{/images/ashok.jpg}" alt="Ashok Leyland" class="w-full h-full object-cover" />
+
+                    <!-- Fallback: only shown when no imageName AND no known brand keyword matched -->
+                    <img th:unless="${(vehicle.imageName != null and !#strings.isEmpty(vehicle.imageName)) or
+                                     (vehicle.brand != null and (#strings.containsIgnoreCase(vehicle.brand, 'Benz') or #strings.containsIgnoreCase(vehicle.brand, 'Audi') or #strings.containsIgnoreCase(vehicle.brand, 'Prius') or #strings.containsIgnoreCase(vehicle.brand, 'Pulsar') or #strings.containsIgnoreCase(vehicle.brand, 'Pulser') or #strings.containsIgnoreCase(vehicle.brand, 'BMW') or #strings.containsIgnoreCase(vehicle.brand, 'HiAce') or #strings.containsIgnoreCase(vehicle.brand, 'Ashok') or #strings.containsIgnoreCase(vehicle.brand, 'Leyland'))) or
+                                     (vehicle.model != null and (#strings.containsIgnoreCase(vehicle.model, 'Benz') or #strings.containsIgnoreCase(vehicle.model, 'Audi') or #strings.containsIgnoreCase(vehicle.model, 'Prius') or #strings.containsIgnoreCase(vehicle.model, 'Pulsar') or #strings.containsIgnoreCase(vehicle.model, 'Pulser') or #strings.containsIgnoreCase(vehicle.model, 'BMW') or #strings.containsIgnoreCase(vehicle.model, 'HiAce') or #strings.containsIgnoreCase(vehicle.model, 'Ashok') or #strings.containsIgnoreCase(vehicle.model, 'Leyland')))}"
+                         th:src="@{/images/user-icon.png}" alt="Vehicle" class="w-full h-full object-contain p-6" />
+
+                </div><!-- end image container -->
+
+                <!-- Centered Name and Price -->
+                <div class="space-y-2">
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-[11px] font-black uppercase tracking-widest rounded-full inline-block" th:text="${vehicle.type}">TYPE</span>
+                    <h3 class="text-4xl font-black text-rofi-black tracking-tight" th:text="${vehicle.brand + ' ' + vehicle.model}">Vehicle Name</h3>
+                    <div class="text-2xl font-bold text-gray-400">
+                        LKR <span class="text-rofi-black font-black" th:text="${vehicle.pricePerDay != null ? #numbers.formatDecimal(vehicle.pricePerDay, 1, 'COMMA', 2, 'POINT') : '0.00'}"></span> <span class="text-lg font-bold">/ day</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form th:action="@{/bookings/new}" method="post" class="p-8 bg-gray-50">
+                <input type="hidden" name="vehicleId" th:value="${vehicle.id}">
+                <input type="hidden" name="hasDriver" th:value="${hasDriver}">
+
+                <!-- Driver Service Notice -->
+                <div th:if="${hasDriver}" class="mb-8 p-6 rounded-2xl bg-yellow-50 border-2 border-dashed border-rofi-yellow flex items-center gap-4">
+                    <div class="w-12 h-12 bg-rofi-yellow rounded-full flex items-center justify-center shrink-0 text-white text-2xl">
+                        👤
+                    </div>
+                    <div>
+                        <h4 class="text-rofi-black font-black text-sm uppercase tracking-wider">Driver Service Included</h4>
+                        <p class="text-gray-600 text-xs font-medium mt-0.5">A professional driver will be assigned. A surcharge of
+                            <!-- Category-based driver daily rate displayed dynamically -->
+                            <span class="font-bold text-rofi-black"
+                                  th:text="${'LKR ' + #numbers.formatDecimal(
+                                      vehicle.type != null and #strings.equalsIgnoreCase(vehicle.type,'TRUCK') ? 6500.0 :
+                                      vehicle.type != null and #strings.equalsIgnoreCase(vehicle.type,'VAN')   ? 5000.0 :
+                                      vehicle.type != null and #strings.equalsIgnoreCase(vehicle.type,'CAR')   ? 4000.0 : 2500.0,
+                                  1, 'COMMA', 2, 'POINT')}">LKR 2,500.00</span>
+                            per day is added to the base rate.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Pick-up Date</label>
+                        <input type="date" name="startDate" id="startDate" required 
+                               class="w-full px-4 py-3.5 bg-white border border-gray-200 rounded-xl text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow focus:ring-2 focus:ring-rofi-yellow transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Return Date</label>
+                        <input type="date" name="endDate" id="endDate" required 
+                               class="w-full px-4 py-3.5 bg-white border border-gray-200 rounded-xl text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow focus:ring-2 focus:ring-rofi-yellow transition-all">
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="/vehicles" class="px-6 py-4 bg-white border border-gray-300 text-gray-700 font-black text-center rounded-full hover:bg-gray-100 transition-colors">Cancel</a>
+                    <button type="submit" class="flex-1 py-4 bg-gradient-to-r from-[#FFC107] to-[#FF9800] hover:from-[#FFB300] hover:to-[#F57C00] text-white text-lg font-black rounded-full transition-all shadow-md transform hover:-translate-y-0.5 text-center">
+                        Confirm & Book Now
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Flatpickr CDN for availability calendar -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script th:inline="javascript">
+        var bookedRanges = /*[[${bookedRanges}]]*/ [];
+        var today = new Date().toISOString().split('T')[0];
+        var disabledDates = [];
+
+        // Convert {from, to} ranges into flatpickr's disable array
+        if (bookedRanges && bookedRanges.length > 0) {
+            bookedRanges.forEach(function(range) {
+                disabledDates.push({ from: range.from, to: range.to });
+            });
+        }
+
+        // Start date picker
+        var startPicker = flatpickr("#startDate", {
+            minDate: today,
+            dateFormat: "Y-m-d",
+            disable: disabledDates,
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                // Highlight today
+                if (dayElem.dateObj.toDateString() === new Date().toDateString()) {
+                    dayElem.style.borderRadius = '50%';
+                    dayElem.style.border = '2px solid #FFC107';
+                }
+            },
+            onChange: function(selectedDates) {
+                if (selectedDates[0]) {
+                    endPicker.set('minDate', selectedDates[0]);
+                }
+            }
+        });
+
+        // End date picker
+        var endPicker = flatpickr("#endDate", {
+            minDate: today,
+            dateFormat: "Y-m-d",
+            disable: disabledDates
+        });
+    </script>
+</div>
+</body>
+</html>

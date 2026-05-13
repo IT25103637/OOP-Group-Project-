@@ -1,0 +1,249 @@
+<!-- Component 05: Frontend Templates | Author: Sandaru (it25100632@my.sliit.lk) -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout/base :: layout(~{::div.content})">
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+<div class="content bg-rofi-white min-h-screen py-10">
+    <div class="max-w-7xl mx-auto px-4">
+        
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+            <div>
+                <h2 class="text-3xl font-black text-rofi-black tracking-tight">Platform Analytics</h2>
+                <p class="text-gray-500 font-bold mt-1">Real-time overview of the RentX ecosystem.</p>
+            </div>
+            <div class="flex gap-3">
+                <a href="/vehicles/add" class="px-5 py-2.5 bg-rofi-yellow text-rofi-black font-black rounded-lg hover:bg-yellow-500 transition-colors shadow-sm">+ Add Vehicle</a>
+                <a href="/admin/users" class="px-5 py-2.5 bg-white text-rofi-black border border-gray-300 font-black rounded-lg hover:bg-gray-50 transition-colors shadow-sm">Manage Users</a>
+                <a href="/admin/payments" class="px-5 py-2.5 bg-rofi-black text-white font-black rounded-lg hover:bg-gray-800 transition-colors shadow-sm flex items-center gap-2">
+                    💳 Payment Records
+                </a>
+            </div>
+        </div>
+
+        <!-- Bento Grid: Main Stats (Modeled after Trust Section Circular Icons) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10 text-center">
+            
+            <!-- Revenue -->
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-200">
+                <div class="w-20 h-20 mx-auto rounded-full bg-yellow-50 flex items-center justify-center mb-6 border-4 border-rofi-yellow shadow-sm">
+                    <span class="text-3xl font-black text-rofi-yellow">Rs.</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-500 uppercase tracking-widest mb-2 text-xs">Total Revenue</h3>
+                <div class="text-4xl font-black text-rofi-black">
+                    LKR <span th:text="${stats.totalRevenue != null ? #numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                </div>
+            </div>
+
+            <!-- Bookings -->
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-200">
+                <div class="w-20 h-20 mx-auto rounded-full bg-yellow-50 flex items-center justify-center mb-6 border-4 border-rofi-yellow shadow-sm text-rofi-yellow">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-500 uppercase tracking-widest mb-2 text-xs">Total Bookings</h3>
+                <div class="text-4xl font-black text-rofi-black" th:text="${stats.totalBookings}">0</div>
+            </div>
+
+            <!-- Fleet -->
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-200">
+                <div class="w-20 h-20 mx-auto rounded-full bg-yellow-50 flex items-center justify-center mb-6 border-4 border-rofi-yellow shadow-sm text-rofi-yellow">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-500 uppercase tracking-widest mb-2 text-xs">Total Vehicles</h3>
+                <div class="text-4xl font-black text-rofi-black" th:text="${stats.totalVehicles}">0</div>
+            </div>
+            
+        </div>
+
+        <!-- Lower Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8">
+                <h3 class="text-rofi-black font-black text-xl mb-6">Fleet Utilization</h3>
+                
+                <div class="flex justify-between items-end mb-2">
+                    <span class="text-4xl font-black text-rofi-black"><span th:text="${stats.totalVehicles - stats.availableVehicles}">0</span> <span class="text-xl text-gray-400 font-bold">/ <span th:text="${stats.totalVehicles}">0</span> Rented</span></span>
+                </div>
+                
+                <div class="w-full h-4 bg-gray-100 rounded-full overflow-hidden flex my-6">
+                    <div class="h-full bg-rofi-yellow" th:style="'width: ' + (${stats.totalVehicles > 0 ? ((stats.totalVehicles - stats.availableVehicles) * 100.0 / stats.totalVehicles) : 0}) + '%'"></div>
+                    <div class="h-full bg-gray-200" th:style="'width: ' + (${stats.totalVehicles > 0 ? (stats.availableVehicles * 100.0 / stats.totalVehicles) : 100}) + '%'"></div>
+                </div>
+                
+                <div class="flex justify-between text-sm font-bold text-gray-500">
+                    <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-rofi-yellow mr-2"></span> Rented</div>
+                    <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-gray-200 mr-2"></span> Available</div>
+                </div>
+            </div>
+
+            <div class="space-y-8">
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-gray-500 font-bold uppercase tracking-widest text-xs mb-2">Active Ongoing Rentals</h3>
+                        <div class="text-4xl font-black text-rofi-black" th:text="${stats.activeBookings}">0</div>
+                    </div>
+                    <a href="/bookings/history" class="px-5 py-3 bg-rofi-yellow hover:bg-yellow-500 text-rofi-black font-black rounded-lg transition-colors shadow-sm">
+                        Process Returns
+                    </a>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-gray-500 font-bold uppercase tracking-widest text-xs mb-2">Most Popular Category</h3>
+                        <div class="text-4xl font-black text-rofi-black uppercase" th:text="${stats.mostRentedType}">N/A</div>
+                    </div>
+                    <div class="text-5xl">🏆</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===================== Revenue Chart ===================== -->
+        <div class="mt-10">
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-2xl font-black text-rofi-black tracking-tight">Revenue Trend</h3>
+                        <p class="text-gray-500 font-bold text-sm mt-1">Monthly revenue breakdown for the platform.</p>
+                    </div>
+                </div>
+                
+                <div class="w-full h-80">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart.js CDN and Initialization -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script th:inline="javascript">
+            document.addEventListener("DOMContentLoaded", function() {
+                var monthLabels = /*[[${stats.monthLabels}]]*/ [];
+                var monthRevenue = /*[[${stats.monthRevenue}]]*/ [];
+                
+                var ctx = document.getElementById('revenueChart').getContext('2d');
+                var revenueChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: monthLabels,
+                        datasets: [{
+                            label: 'Revenue (LKR)',
+                            data: monthRevenue,
+                            backgroundColor: '#FFC107',
+                            borderColor: '#FF9800',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#F3F4F6' },
+                                ticks: { font: { family: "'Inter', sans-serif", weight: 'bold' }, color: '#9CA3AF' }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { family: "'Inter', sans-serif", weight: 'bold' }, color: '#9CA3AF' }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#000000',
+                                titleFont: { family: "'Inter', sans-serif", weight: 'bold' },
+                                bodyFont: { family: "'Inter', sans-serif", weight: 'normal' },
+                                callbacks: {
+                                    label: function(context) {
+                                        return ' LKR ' + context.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+
+        <!-- ===================== Payment Transactions Report ===================== -->
+        <div class="mt-10">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-2xl font-black text-rofi-black tracking-tight">Payment Transactions</h3>
+                    <p class="text-gray-500 font-bold text-sm mt-1">All recorded simulated payment transactions.</p>
+                </div>
+                <span class="px-4 py-2 bg-yellow-100 text-yellow-800 text-xs font-black uppercase tracking-widest rounded-full"
+                      th:text="${payments != null ? payments.size() + ' Records' : '0 Records'}">0 Records</span>
+            </div>
+
+            <!-- Payments Table -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-200">
+                                <th class="text-left px-6 py-4 text-xs font-black text-gray-500 uppercase tracking-widest">Customer</th>
+                                <th class="text-left px-6 py-4 text-xs font-black text-gray-500 uppercase tracking-widest">Contact</th>
+                                <th class="text-left px-6 py-4 text-xs font-black text-gray-500 uppercase tracking-widest">Card (Masked)</th>
+                                <th class="text-right px-6 py-4 text-xs font-black text-gray-500 uppercase tracking-widest">Amount (LKR)</th>
+                                <th class="text-left px-6 py-4 text-xs font-black text-gray-500 uppercase tracking-widest">Timestamp</th>
+                                <th class="text-center px-6 py-4 text-xs font-black text-gray-500 uppercase tracking-widest">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populated rows from payments.txt -->
+                            <tr th:each="p : ${payments}"
+                                class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+
+                                <td class="px-6 py-4">
+                                    <div class="font-black text-rofi-black" th:text="${p.customerName}">Name</div>
+                                    <div class="text-xs text-gray-400 font-mono mt-0.5" th:text="${p.bookingId}">ID</div>
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <div class="font-bold text-gray-700" th:text="${p.email}">email</div>
+                                    <div class="text-xs text-gray-400 font-bold mt-0.5" th:text="${p.mobileNumber}">mobile</div>
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <span class="font-mono text-sm font-bold text-gray-600 tracking-widest"
+                                          th:text="${p.maskedCardNumber}">**** **** **** 0000</span>
+                                </td>
+
+                                <td class="px-6 py-4 text-right">
+                                    <span class="text-xl font-black text-rofi-black"
+                                          th:text="${p.totalAmountLKR != null ? #numbers.formatDecimal(p.totalAmountLKR, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <span class="text-xs font-bold text-gray-500"
+                                          th:text="${p.timestamp != null ? #strings.substring(p.timestamp, 0, 19).replace('T', ' ') : 'N/A'}">N/A</span>
+                                </td>
+
+                                <td class="px-6 py-4 text-center">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-black uppercase tracking-wide rounded-full"
+                                          th:text="${p.status}">SUCCESS</span>
+                                </td>
+                            </tr>
+
+                            <!-- Empty State -->
+                            <tr th:if="${payments == null or #lists.isEmpty(payments)}">
+                                <td colspan="6" class="px-6 py-16 text-center">
+                                    <div class="text-4xl mb-3">💳</div>
+                                    <p class="text-gray-400 font-bold text-sm">No payment transactions recorded yet.</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

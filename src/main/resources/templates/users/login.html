@@ -1,0 +1,51 @@
+<!-- Component 05: Frontend Templates | Author: Sandaru (it25100632@my.sliit.lk) -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout/base :: layout(~{::div.content})">
+<head>
+    <title>Login</title>
+</head>
+<body>
+<div class="content flex items-center justify-center min-h-[80vh] bg-rofi-white px-4">
+    <div class="w-full max-w-md bg-white p-10 rounded-3xl shadow-xl border border-gray-100">
+        
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-black text-rofi-black tracking-tight mb-2">Welcome Back</h2>
+            <p class="text-gray-500 font-bold text-sm">Log in to manage your bookings and account.</p>
+        </div>
+
+        <div th:if="${param.success}" class="mb-6 p-4 rounded-xl bg-green-50 text-green-700 text-sm font-bold text-center border border-green-200">
+            Registration successful. Please log in.
+        </div>
+        <div th:if="${error}" class="mb-6 p-4 rounded-xl bg-red-50 text-red-700 text-sm font-bold text-center border border-red-200">
+            <span th:text="${error}"></span>
+        </div>
+        
+        <form th:action="@{/users/login}" method="post" class="space-y-6">
+            <div>
+                <label for="email" class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Email</label>
+                <input type="email" id="email" name="email" required placeholder="you@example.com"
+                       class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-rofi-black font-bold placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rofi-yellow focus:border-rofi-yellow transition-all">
+            </div>
+            
+            <div>
+                <label for="password" class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Password</label>
+                <input type="password" id="password" name="password" required placeholder="••••••••"
+                       class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-rofi-black font-bold placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rofi-yellow focus:border-rofi-yellow transition-all">
+            </div>
+
+            <button type="submit" class="w-full py-4 px-4 bg-gradient-to-r from-[#FFC107] to-[#FF9800] hover:from-[#FFB300] hover:to-[#F57C00] text-white font-black text-lg rounded-full transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 mt-2">
+                Sign In
+            </button>
+        </form>
+        
+        <div class="mt-8 text-center pt-6 border-t border-gray-100">
+            <p class="text-gray-500 font-bold text-sm">
+                Don't have an account? 
+                <a href="/users/register" class="text-rofi-yellow hover:text-yellow-600 ml-1 underline decoration-2 underline-offset-2">Register here</a>
+            </p>
+        </div>
+        
+    </div>
+</div>
+</body>
+</html>

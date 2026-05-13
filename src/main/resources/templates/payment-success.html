@@ -1,0 +1,337 @@
+<!-- Component 05: Frontend Templates | Author: Sandaru (it25100632@my.sliit.lk) -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout/base :: layout(~{::div.content})">
+<head>
+    <title>Payment Successful — RenTex</title>
+</head>
+<body>
+<div class="content bg-rofi-white min-h-[85vh] flex items-center justify-center py-16 px-4">
+    <div class="w-full max-w-lg">
+
+        <!-- ═══════════════════════════════════════════════
+             WEB VIEW CARD  — always visible on screen
+        ═══════════════════════════════════════════════ -->
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden text-center">
+
+            <!-- Amber hero banner -->
+            <div class="bg-gradient-to-r from-[#FFC107] to-[#FF9800] p-10">
+                <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto shadow-lg">
+                    <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h2 class="text-white text-3xl font-black mt-6 tracking-tight">Payment Successful!</h2>
+                <p class="text-yellow-100 font-bold text-sm mt-2">Your booking has been confirmed and paid.</p>
+            </div>
+
+            <!-- Summary rows -->
+            <div class="p-8 space-y-5">
+                <div class="bg-gray-50 rounded-2xl p-5 text-left space-y-3">
+
+                    <div class="flex justify-between items-center text-sm font-bold gap-4">
+                        <span class="text-gray-500 shrink-0">Payment Ref</span>
+                        <span class="text-gray-900 font-mono font-black tracking-wider text-right text-xs"
+                              th:text="${paymentId != null ? paymentId : 'N/A'}">TXN-260517-A3K9PL</span>
+                    </div>
+
+                    <div class="flex justify-between items-center text-sm font-bold">
+                        <span class="text-gray-500">Customer Name</span>
+                        <span class="text-gray-900"
+                              th:text="${customerName != null ? customerName : 'N/A'}">N/A</span>
+                    </div>
+
+                    <div class="flex justify-between items-center text-sm font-bold border-t border-gray-200 pt-3 mt-3">
+                        <span class="text-gray-500 uppercase tracking-wider text-xs">Total Paid</span>
+                        <span class="text-2xl font-black text-[#FFC107]">
+                            LKR <span th:text="${amountPaid != null ? #numbers.formatDecimal(amountPaid, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                        </span>
+                    </div>
+                </div>
+
+                <p class="text-gray-400 text-xs font-medium">
+                    A confirmation receipt has been recorded. Your transaction is stored securely in our system.
+                </p>
+
+                <!-- Action buttons -->
+                <div class="flex flex-col gap-3 pt-2">
+
+                    <!-- Download PDF — triggers html2pdf on #receipt-pdf-layout -->
+                    <button id="download-btn" onclick="downloadReceiptPDF()"
+                            class="w-full py-3.5 bg-gradient-to-r from-[#FFC107] to-[#FF9800] hover:from-[#FFB300] hover:to-[#F57C00]
+                                   text-white font-black rounded-2xl hover:scale-105 hover:shadow-lg transition-all duration-300
+                                   shadow-md flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Download Receipt as PDF
+                    </button>
+
+                    <div class="flex gap-3">
+                        <a href="/bookings/history"
+                           class="flex-1 py-3.5 bg-gray-900 text-white font-black rounded-2xl hover:bg-gray-800 transition-colors text-center text-sm">
+                            My Bookings
+                        </a>
+                        <a href="/"
+                           class="flex-1 py-3.5 border-2 border-gray-200 text-gray-900 font-black rounded-2xl hover:bg-gray-50 transition-colors text-center text-sm">
+                            Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div><!-- end web view card -->
+
+
+        <!-- ═══════════════════════════════════════════════
+             PDF RECEIPT LAYOUT
+             Hidden from the browser viewport.
+             html2pdf.js temporarily un-hides this element,
+             renders it at 2× resolution via html2canvas,
+             then converts to a letter-size PDF.
+             All styles are INLINE for html2canvas fidelity.
+        ═══════════════════════════════════════════════ -->
+        <div id="receipt-pdf-layout" class="hidden">
+
+            <!-- Outer page wrapper — letter width, white background -->
+            <div style="width:750px;background:#ffffff;font-family:Arial,Helvetica,sans-serif;
+                        margin:0;padding:0;box-sizing:border-box;">
+
+                <!-- ── Dark header ── -->
+                <div style="background:#0f0f0f;padding:32px 44px 28px;position:relative;overflow:hidden;">
+
+                    <!-- Decorative amber glow -->
+                    <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;
+                                background:radial-gradient(circle,#FFC107 0%,transparent 70%);opacity:0.22;"></div>
+                    <div style="position:absolute;bottom:-50px;left:30px;width:140px;height:140px;border-radius:50%;
+                                background:radial-gradient(circle,#FF9800 0%,transparent 70%);opacity:0.14;"></div>
+
+                    <!-- Logo + PAID stamp -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1;">
+                        <div>
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <div style="width:44px;height:44px;background:#FFC107;border-radius:10px;
+                                            display:flex;align-items:center;justify-content:center;
+                                            font-size:22px;font-weight:900;color:#000;flex-shrink:0;">R</div>
+                                <span style="font-size:26px;font-weight:900;letter-spacing:-0.5px;color:#ffffff;">RENTX</span>
+                            </div>
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:#6b7280;margin-top:6px;">
+                                VEHICLE RENTAL PLATFORM
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;
+                                        color:#FFC107;text-transform:uppercase;">Official Receipt</div>
+                            <div style="font-size:36px;font-weight:900;color:#ffffff;
+                                        letter-spacing:-1px;line-height:1.1;">PAID</div>
+                            <div style="width:54px;height:3px;background:#FFC107;
+                                        margin-left:auto;margin-top:4px;border-radius:2px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Amber rule -->
+                    <div style="height:2px;background:linear-gradient(90deg,#FFC107,#FF9800,transparent);
+                                margin-top:22px;border-radius:1px;"></div>
+                </div>
+
+                <!-- ── Ticket notch divider ── -->
+                <div style="height:26px;background:#f3f4f6;display:flex;align-items:center;position:relative;">
+                    <div style="width:24px;height:24px;background:#ffffff;border-radius:50%;
+                                border:1px solid #e5e7eb;position:absolute;left:-12px;"></div>
+                    <div style="flex:1;border-top:2px dashed #d1d5db;margin:0 20px;"></div>
+                    <div style="width:24px;height:24px;background:#ffffff;border-radius:50%;
+                                border:1px solid #e5e7eb;position:absolute;right:-12px;"></div>
+                </div>
+
+                <!-- ── Receipt body ── -->
+                <div style="padding:28px 44px 32px;background:#ffffff;">
+
+                    <!-- Payment ref + CONFIRMED pill -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+                        <div>
+                            <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;
+                                        color:#9ca3af;text-transform:uppercase;margin-bottom:5px;">
+                                Payment Reference
+                            </div>
+                            <div style="font-size:20px;font-weight:900;font-family:monospace;
+                                        letter-spacing:0.04em;color:#0f0f0f;"
+                                 th:text="${paymentId != null ? paymentId : 'N/A'}">TXN-260517-A3K9PL</div>
+                        </div>
+                        <div style="background:#f0fdf4;border:2px solid #22c55e;border-radius:50px;
+                                    padding:6px 16px;display:flex;align-items:center;gap:7px;flex-shrink:0;">
+                            <div style="width:8px;height:8px;background:#22c55e;border-radius:50%;"></div>
+                            <span style="font-size:10px;font-weight:900;color:#15803d;letter-spacing:0.06em;">CONFIRMED</span>
+                        </div>
+                    </div>
+
+                    <!-- Detail rows table -->
+                    <div style="border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;margin-bottom:22px;">
+
+                        <!-- Table header bar -->
+                        <div style="background:#0f0f0f;padding:10px 20px;">
+                            <span style="font-size:9px;font-weight:800;letter-spacing:0.15em;
+                                         color:#FFC107;text-transform:uppercase;">Transaction Details</span>
+                        </div>
+
+                        <!-- Customer -->
+                        <div style="display:flex;justify-content:space-between;align-items:center;
+                                    padding:14px 20px;border-bottom:1px solid #f0f0f0;background:#ffffff;">
+                            <span style="font-size:10px;font-weight:700;color:#6b7280;
+                                         letter-spacing:0.06em;text-transform:uppercase;">Customer</span>
+                            <span style="font-size:13px;font-weight:900;color:#0f0f0f;"
+                                  th:text="${customerName != null ? customerName : 'N/A'}">N/A</span>
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div style="display:flex;justify-content:space-between;align-items:center;
+                                    padding:14px 20px;border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                            <span style="font-size:10px;font-weight:700;color:#6b7280;
+                                         letter-spacing:0.06em;text-transform:uppercase;">Payment Method</span>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <div style="background:#1a1a2e;border-radius:4px;padding:3px 8px;
+                                            font-size:9px;font-weight:900;color:#ffffff;letter-spacing:0.05em;">CARD</div>
+                                <span style="font-size:12px;font-weight:800;color:#0f0f0f;">Secured &amp; Encrypted</span>
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div style="display:flex;justify-content:space-between;align-items:center;
+                                    padding:14px 20px;border-bottom:1px solid #f0f0f0;background:#ffffff;">
+                            <span style="font-size:10px;font-weight:700;color:#6b7280;
+                                         letter-spacing:0.06em;text-transform:uppercase;">Status</span>
+                            <span style="font-size:12px;font-weight:900;color:#15803d;">&#10003; Payment Successful</span>
+                        </div>
+
+                        <!-- Date & Time -->
+                        <div style="display:flex;justify-content:space-between;align-items:center;
+                                    padding:14px 20px;border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                            <span style="font-size:10px;font-weight:700;color:#6b7280;
+                                         letter-spacing:0.06em;text-transform:uppercase;">Date &amp; Time</span>
+                            <span style="font-size:12px;font-weight:800;color:#0f0f0f;"
+                                  th:text="${#temporals.format(#temporals.createNow(), 'dd MMM yyyy, HH:mm')}">17 May 2026</span>
+                        </div>
+
+                        <!-- Grand total dark row -->
+                        <div style="display:flex;justify-content:space-between;align-items:center;
+                                    padding:18px 20px;background:#0f0f0f;position:relative;overflow:hidden;">
+                            <div style="position:absolute;top:-12px;right:36px;width:100px;height:100px;border-radius:50%;
+                                        background:radial-gradient(circle,#FFC107,transparent 70%);opacity:0.2;"></div>
+                            <div style="position:relative;z-index:1;">
+                                <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;
+                                            color:#6b7280;text-transform:uppercase;margin-bottom:2px;">
+                                    Total Amount Paid
+                                </div>
+                                <div style="font-size:10px;color:#4b5563;font-weight:600;">
+                                    Inclusive of all charges
+                                </div>
+                            </div>
+                            <div style="position:relative;z-index:1;text-align:right;">
+                                <div style="font-size:9px;font-weight:700;color:#FFC107;
+                                            letter-spacing:0.08em;margin-bottom:2px;">LKR</div>
+                                <div style="font-size:30px;font-weight:900;color:#ffffff;
+                                            letter-spacing:-0.5px;line-height:1;">
+                                    <span th:text="${amountPaid != null ? #numbers.formatDecimal(amountPaid, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end detail table -->
+
+                    <!-- Note -->
+                    <div style="background:#fffbeb;border-left:4px solid #FFC107;border-radius:0 8px 8px 0;
+                                padding:12px 16px;margin-bottom:22px;">
+                        <div style="font-size:10px;font-weight:700;color:#92400e;margin-bottom:3px;">
+                            &#128203; Important
+                        </div>
+                        <div style="font-size:10px;color:#78350f;line-height:1.6;">
+                            Please retain this receipt as proof of payment. Quote your Payment Reference
+                            when contacting RenTex support. This document is system-generated and valid without a signature.
+                        </div>
+                    </div>
+
+                    <!-- Footer strip -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;
+                                padding-top:14px;border-top:1px solid #e5e7eb;">
+                        <div style="font-size:9px;color:#9ca3af;font-weight:600;">RenTex All rights received</div>
+                        <div style="display:flex;align-items:center;gap:5px;">
+                            <div style="width:6px;height:6px;background:#FFC107;border-radius:50%;"></div>
+                            <span style="font-size:9px;color:#9ca3af;font-weight:600;">Secured</span>
+                            <div style="width:6px;height:6px;background:#22c55e;border-radius:50%;"></div>
+                            <span style="font-size:9px;color:#9ca3af;font-weight:600;">256-bit Encrypted</span>
+                        </div>
+                        <div style="font-size:9px;color:#9ca3af;font-weight:600;">rentex.lk</div>
+                    </div>
+
+                </div><!-- end receipt body -->
+            </div><!-- end inner wrapper -->
+        </div><!-- end #receipt-pdf-layout -->
+
+
+    </div><!-- end max-w-lg wrapper -->
+
+    <!-- ═══════════════════════════════════════════════
+         html2pdf.js CDN — MUST be inside div.content
+         so Thymeleaf's fragment extraction includes it.
+         Plain script tag — no th:inline — so Thymeleaf
+         never touches the JS object literals inside.
+    ═══════════════════════════════════════════════ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        function downloadReceiptPDF() {
+            console.log('PDF Download initiated...');
+
+            var element = document.getElementById('receipt-pdf-layout');
+
+            if (!element) {
+                console.error('Error: #receipt-pdf-layout not found.');
+                alert('Receipt layout missing. Please refresh and try again.');
+                return;
+            }
+
+            var btn = document.getElementById('download-btn');
+
+            // Un-hide the receipt so html2canvas can paint it off-screen
+            element.classList.remove('hidden');
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerText = 'Generating PDF...';
+            }
+
+            var opt = {
+                margin:       0.5,
+                filename:     'Payment receipt - Rentx.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf()
+                .set(opt)
+                .from(element)
+                .save()
+                .then(function () {
+                    console.log('PDF saved successfully.');
+                    element.classList.add('hidden');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">'
+                            + '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"'
+                            + ' d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2'
+                            + 'h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">'
+                            + '</path></svg> Download Receipt as PDF';
+                    }
+                })
+                .catch(function (err) {
+                    console.error('PDF error: ', err);
+                    element.classList.add('hidden');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerText = 'Download Receipt as PDF';
+                    }
+                });
+        }
+    </script>
+
+</div><!-- end div.content -->
+</body>
+</html>
+
