@@ -1,0 +1,92 @@
+<!-- Component 05: Frontend Templates | Author: Sandaru (it25100632@my.sliit.lk) -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout/base :: layout(~{::div.content})">
+<head>
+    <title>Edit Vehicle</title>
+</head>
+<body>
+<div class="content bg-rofi-white min-h-screen flex items-center justify-center py-16 px-4">
+    <div class="w-full max-w-lg">
+
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+
+            <!-- Header -->
+            <div class="bg-rofi-black p-8">
+                <div class="flex items-center gap-3 mb-2">
+                    <a href="/vehicles"
+                       class="text-gray-400 hover:text-rofi-yellow transition-colors text-sm font-bold">← Back to Fleet</a>
+                </div>
+                <h2 class="text-white text-2xl font-black tracking-tight">Edit Vehicle</h2>
+                <p class="text-gray-400 text-sm font-bold mt-1"
+                   th:text="${vehicle.brand + ' ' + vehicle.model + ' (' + vehicle.type + ')'}">Vehicle</p>
+            </div>
+
+            <!-- Info Note -->
+            <div class="bg-yellow-50 border-b border-yellow-100 px-8 py-3 flex items-center gap-2">
+                <span class="text-yellow-700 text-xs font-black">ℹ️</span>
+                <p class="text-yellow-700 text-xs font-bold">Vehicle type cannot be changed after creation.</p>
+            </div>
+
+            <!-- Form — uses STATIC POST path /vehicles/edit, vehicleId passed as hidden field -->
+            <form action="/vehicles/edit" method="post" class="p-8 space-y-5">
+
+                <!-- Hidden ID field — passes the UUID to the static POST handler -->
+                <input type="hidden" name="vehicleId" th:value="${vehicle.id}" />
+
+                <!-- Brand -->
+                <div>
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Brand</label>
+                    <input type="text" name="brand" th:value="${vehicle.brand}"
+                           required maxlength="60"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow focus:ring-2 focus:ring-yellow-100 transition-all" />
+                </div>
+
+                <!-- Model -->
+                <div>
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Model</label>
+                    <input type="text" name="vehicleModel" th:value="${vehicle.model}"
+                           required maxlength="60"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow focus:ring-2 focus:ring-yellow-100 transition-all" />
+                </div>
+
+                <!-- Price Per Day -->
+                <div>
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Price Per Day (LKR)</label>
+                    <input type="number" name="pricePerDay" th:value="${vehicle.pricePerDay}"
+                           required min="1" step="0.01"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow focus:ring-2 focus:ring-yellow-100 transition-all" />
+                </div>
+
+                <!-- Location -->
+                <div>
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Location</label>
+                    <input type="text" name="location" th:value="${vehicle.location}"
+                           required maxlength="80"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-rofi-black font-bold focus:outline-none focus:border-rofi-yellow focus:ring-2 focus:ring-yellow-100 transition-all" />
+                </div>
+
+                <!-- Type (read-only display) -->
+                <div>
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Type (read-only)</label>
+                    <div class="w-full px-4 py-3 rounded-xl border border-gray-100 bg-gray-100 text-gray-500 font-bold"
+                         th:text="${vehicle.type}">TYPE</div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-4 pt-2">
+                    <a href="/vehicles"
+                       class="flex-1 text-center py-3.5 bg-white border border-gray-300 text-gray-700 font-black rounded-2xl hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </a>
+                    <button type="submit"
+                            class="flex-1 py-3.5 bg-gradient-to-r from-[#FFC107] to-[#FF9800] text-white font-black rounded-2xl hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                        Save Changes
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

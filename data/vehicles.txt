@@ -1,0 +1,7 @@
+﻿VID#001,CAR,Toyota,Prius,6500,Colombo,true,4,
+VID#002,CAR,BMW,3 Series,18000,Colombo,true,5,
+VID#003,CAR,Benz,C Class,22000,Kandy,true,5,
+VID#004,CAR,Audi,A4,20000,Negombo,true,5,
+VID#005,BIKE,Yamaha,Pulsar,2500,Colombo,true,false,
+VID#006,VAN,Toyota,HiAce,12000,Colombo,true,8.0,
+VID#007,TRUCK,Ashok,Leyland,15000,Colombo,true,5000

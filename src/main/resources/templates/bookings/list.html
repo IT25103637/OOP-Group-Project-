@@ -1,0 +1,224 @@
+<!-- Component 05: Frontend Templates | Author: Sandaru (it25100632@my.sliit.lk) -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout/base :: layout(~{::div.content})">
+<head>
+    <title>Booking Records — Admin</title>
+</head>
+<body>
+<div class="content bg-rofi-white min-h-screen py-10">
+    <div class="max-w-7xl mx-auto px-4">
+
+        <!-- ===== PAGE HEADER ===== -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-gray-200 pb-6">
+            <div>
+                <h1 class="text-3xl font-black text-rofi-black tracking-tight">Booking Records</h1>
+                <p class="text-gray-500 font-bold mt-1 text-sm">Admin view — manage all active and completed rentals.</p>
+            </div>
+            <!-- Quick link to the dedicated Return form -->
+            <a href="/bookings/return"
+               class="inline-flex items-center gap-2 px-5 py-2.5 bg-rofi-yellow hover:bg-yellow-500 text-rofi-black font-black text-sm rounded-xl shadow-sm transition-colors">
+                <!-- Inline SVG: no self-closing issue, uses explicit closing tags -->
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+                </svg>
+                Process Return
+            </a>
+        </div>
+
+        <!-- ===== FLASH MESSAGES ===== -->
+        <div th:if="${param.extended}" class="mb-6 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700 font-bold flex items-center shadow-sm">
+            <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Booking extended successfully. The new return date has been saved.
+        </div>
+
+        <div th:if="${param.extendError}" class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 font-bold flex items-center shadow-sm">
+            <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>
+                Extension failed:
+                <span th:if="${param.extendError != null and param.extendError[0] == 'BookingNotFound'}">Booking ID not found.</span>
+                <span th:if="${param.extendError != null and param.extendError[0] == 'InvalidDate'}">New date must be after the current end date.</span>
+                <span th:if="${param.extendError != null and param.extendError[0] == 'AlreadyReturned'}">This booking has already been returned.</span>
+            </span>
+        </div>
+
+        <div th:if="${param.cancelled}" class="mb-6 p-4 rounded-xl bg-orange-50 border border-orange-200 text-orange-700 font-bold flex items-center shadow-sm">
+            <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            Booking cancelled. The vehicle has been released back to the fleet.
+        </div>
+
+        <!-- ===== MAIN DATA TABLE ===== -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm whitespace-nowrap">
+                    <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-black tracking-wider border-b border-gray-200">
+                    <tr>
+                        <th class="px-5 py-4">#</th>
+                        <th class="px-5 py-4">Booking ID</th>
+                        <th class="px-5 py-4">Vehicle</th>
+                        <th class="px-5 py-4">Customer ID</th>
+                        <th class="px-5 py-4">Duration</th>
+                        <th class="px-5 py-4">Base Cost (LKR)</th>
+                        <th class="px-5 py-4">Late Fee (LKR)</th>
+                        <th class="px-5 py-4">Status</th>
+                        <th class="px-5 py-4 text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-rofi-black font-bold">
+
+                    <!-- ===== DATA ROWS ===== -->
+                    <tr th:each="b, iterStat : ${bookings}"
+                        class="hover:bg-yellow-50 transition-colors align-top">
+
+                        <!-- Row number -->
+                        <td class="px-5 py-4 text-gray-400 font-bold" th:text="${iterStat.count}"></td>
+
+                        <!-- Booking ID -->
+                        <td class="px-5 py-4 font-mono text-xs text-gray-500">
+                            <span th:text="${b.id}"></span>
+                        </td>
+
+                        <!-- Vehicle brand + model (looked up via vehicleService) -->
+                        <td class="px-5 py-4">
+                            <div th:if="${vehicleService.getVehicleById(b.vehicleId) != null}"
+                                 class="flex flex-col">
+                                <span class="font-black text-rofi-black"
+                                      th:text="${vehicleService.getVehicleById(b.vehicleId).brand + ' ' + vehicleService.getVehicleById(b.vehicleId).model}"></span>
+                                <span class="text-xs text-gray-400 font-bold uppercase tracking-wide"
+                                      th:text="${vehicleService.getVehicleById(b.vehicleId).type}"></span>
+                            </div>
+                            <span th:if="${vehicleService.getVehicleById(b.vehicleId) == null}"
+                                  class="font-mono text-xs text-gray-400"
+                                  th:text="${#strings.substring(b.vehicleId, 0, 8) + '...'}"></span>
+                        </td>
+
+                        <!-- Customer ID -->
+                        <td class="px-5 py-4 font-mono text-xs text-gray-500">
+                            <span th:text="${b.userId}"></span>
+                        </td>
+
+                        <!-- Booking duration dates -->
+                        <td class="px-5 py-4">
+                            <div class="flex flex-col gap-0.5">
+                                <span class="text-xs text-gray-400 font-bold">From</span>
+                                <span th:text="${b.startDate != null ? #temporals.format(b.startDate, 'dd, MMMM, yyyy') : '—'}"></span>
+                                <span class="text-xs text-gray-400 font-bold mt-1">To</span>
+                                <span th:text="${b.endDate != null ? #temporals.format(b.endDate, 'dd, MMMM, yyyy') : '—'}"></span>
+                                <!-- Return date shown if vehicle is back -->
+                                <span th:if="${b.returnDate != null}" class="text-xs text-green-600 font-black mt-1">
+                                    Returned: <span th:text="${#temporals.format(b.returnDate, 'dd, MMMM, yyyy')}"></span>
+                                </span>
+                            </div>
+                        </td>
+
+                        <!-- Base rental cost -->
+                        <td class="px-5 py-4 font-black">
+                            LKR <span th:text="${b.totalCost != null ? #numbers.formatDecimal(b.totalCost, 1, 'COMMA', 2, 'POINT') : '0.00'}"></span>
+                        </td>
+
+                        <!-- Late fee — highlighted in red when non-zero -->
+                        <td class="px-5 py-4">
+                            <span th:if="${b.lateFee > 0}"
+                                  class="text-red-600 font-black bg-red-50 px-2.5 py-1 rounded-md text-xs"
+                                  th:text="'+LKR ' + ${b.lateFee != null ? #numbers.formatDecimal(b.lateFee, 1, 'COMMA', 2, 'POINT') : '0.00'}"></span>
+                            <span th:if="${b.lateFee == 0}" class="text-gray-300">—</span>
+                        </td>
+
+                        <!-- Payment status badge -->
+                        <td class="px-5 py-4">
+                            <span th:if="${b.paymentStatus.name() == 'PAID'}"
+                                  class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-black bg-green-100 text-green-800">PAID</span>
+                            <span th:if="${b.paymentStatus.name() == 'PENDING'}"
+                                  class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-black bg-yellow-100 text-yellow-800">PENDING</span>
+                        </td>
+
+                        <!-- ===== ACTION COLUMN ===== -->
+                        <td class="px-5 py-4">
+
+                            <!-- ACTIVE BOOKING: show Return button + Extend inline form -->
+                            <div th:if="${b.returnDate == null}" class="flex flex-col gap-3 items-start min-w-[200px]">
+
+                                <!-- 1. Return Vehicle button — links to the dedicated Return form -->
+                                <a th:href="@{/bookings/return(bookingId=${b.id})}"
+                                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-rofi-yellow hover:bg-yellow-500 text-rofi-black text-xs font-black rounded-lg transition-colors shadow-sm w-full justify-center">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+                                    </svg>
+                                    Return Vehicle
+                                </a>
+
+                                <!-- 2. Extend Date — collapsible inline section -->
+                                <details class="w-full group">
+                                    <summary class="cursor-pointer inline-flex items-center gap-1.5 px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-black rounded-lg border border-gray-200 transition-colors w-full justify-center list-none">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Extend Date
+                                    </summary>
+                                    <!-- Inline extend form — hidden until <details> is opened -->
+                                    <form th:action="@{/bookings/extend}" method="post"
+                                          class="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-lg flex flex-col gap-2"
+                                          onsubmit="return confirm('Extend this booking to the selected date?');">
+                                        <!-- Hidden field carries the booking ID safely -->
+                                        <input type="hidden" name="bookingId" th:value="${b.id}" />
+                                        <label class="text-xs font-black text-gray-600">New Return Date</label>
+                                        <!-- Self-closing input tag — required by Thymeleaf stability constraint -->
+                                        <input type="date" name="newEndDate" required="required"
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-yellow-400 focus:outline-none" />
+                                        <button type="submit"
+                                                class="px-3 py-1.5 bg-rofi-black hover:bg-gray-800 text-rofi-yellow text-xs font-black rounded-lg transition-colors">
+                                            Confirm Extension
+                                        </button>
+                                    </form>
+                                </details>
+
+                            </div>
+
+                            <!-- RETURNED BOOKING: show completed badge + receipt link -->
+                            <div th:if="${b.returnDate != null}" class="flex flex-col items-center gap-2">
+                                <span class="inline-flex items-center gap-1.5 text-green-600 text-xs font-black">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Completed
+                                </span>
+                                <a th:href="@{/bookings/receipt/{id}(id=${b.id})}"
+                                   class="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-black rounded-lg transition-colors">
+                                    📄 Receipt
+                                </a>
+                            </div>
+
+                        </td>
+                    </tr>
+
+                    <!-- ===== EMPTY STATE ===== -->
+                    <tr th:if="${#lists.isEmpty(bookings)}">
+                        <td colspan="9" class="px-6 py-16 text-center">
+                            <div class="flex flex-col items-center justify-center text-gray-400">
+                                <svg class="w-14 h-14 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                                <span class="font-black text-lg">No bookings found</span>
+                                <p class="text-sm mt-1">Bookings will appear here once customers make reservations.</p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div><!-- end table card -->
+
+    </div>
+</div>
+</body>
+</html>

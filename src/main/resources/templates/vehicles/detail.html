@@ -1,0 +1,181 @@
+<!-- Component 05: Frontend Templates | Author: Sandaru (it25100632@my.sliit.lk) -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout/base :: layout(~{::div.content})">
+<head>
+    <title th:text="${vehicle.brand + ' ' + vehicle.model}">Vehicle Detail</title>
+</head>
+<body>
+<div class="content bg-rofi-white min-h-screen py-12">
+    <div class="max-w-4xl mx-auto px-4">
+
+        <!-- Back Button -->
+        <a href="/vehicles"
+           class="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-rofi-yellow transition-colors mb-8">
+            ← Back to Fleet
+        </a>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+
+            <!-- Top Layout: Image + Core Info -->
+            <div class="flex flex-col md:flex-row">
+
+                <!-- Image Panel -->
+                <div class="w-full md:w-80 h-64 md:h-auto bg-gray-100 flex items-center justify-center shrink-0 relative overflow-hidden">
+
+                    <!-- Status Badge -->
+                    <div class="absolute top-4 left-4 z-10">
+                        <span th:if="${vehicle.availableStatus}"
+                              class="px-3 py-1 bg-green-500 text-white text-xs font-black uppercase tracking-wide rounded-md shadow-sm">Available</span>
+                        <span th:unless="${vehicle.availableStatus}"
+                              class="px-3 py-1 bg-gray-500 text-white text-xs font-black uppercase tracking-wide rounded-md shadow-sm">Rented</span>
+                    </div>
+
+                    <!-- Type Badge -->
+                    <span class="absolute bottom-4 left-4 px-2.5 py-1 bg-white bg-opacity-90 text-gray-700 text-[10px] font-black uppercase tracking-widest rounded-lg shadow-sm"
+                          th:text="${vehicle.type}">TYPE</span>
+
+                    <!-- Custom uploaded image (from Become a Host form) -->
+                    <img th:if="${vehicle.imageName != null and !#strings.isEmpty(vehicle.imageName)}"
+                         th:src="@{/uploads/{img}(img=${vehicle.imageName})}"
+                         alt="Vehicle" class="w-full h-full object-cover" />
+
+                    <!-- Benz: check brand OR model -->
+                    <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'Benz')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'Benz'))}"
+                         th:src="@{/images/benz-c.jpg}" alt="Benz" class="w-full h-full object-cover" />
+
+                    <!-- Audi: check brand OR model -->
+                    <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'Audi')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'Audi'))}"
+                         th:src="@{/images/audi.jpg}" alt="Audi" class="w-full h-full object-cover" />
+
+                    <!-- Prius: check brand OR model -->
+                    <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'Prius')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'Prius'))}"
+                         th:src="@{/images/prius.jpg}" alt="Prius" class="w-full h-full object-cover" />
+
+                    <img th:if="${(vehicle.brand != null and (#strings.containsIgnoreCase(vehicle.brand, 'Pulsar') or #strings.containsIgnoreCase(vehicle.brand, 'Pulser'))) or (vehicle.model != null and (#strings.containsIgnoreCase(vehicle.model, 'Pulsar') or #strings.containsIgnoreCase(vehicle.model, 'Pulser')))}"
+                         th:src="@{/images/pulsar.jpg}" alt="Pulsar" class="w-full h-full object-cover" />
+
+                    <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'BMW')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'BMW'))}"
+                         th:src="@{/images/bmw.jpg}" alt="BMW" class="w-full h-full object-cover" />
+
+                    <img th:if="${(vehicle.brand != null and #strings.containsIgnoreCase(vehicle.brand, 'HiAce')) or (vehicle.model != null and #strings.containsIgnoreCase(vehicle.model, 'HiAce'))}"
+                         th:src="@{/images/hiace.jpg}" alt="HiAce" class="w-full h-full object-cover" />
+
+                    <img th:if="${(vehicle.brand != null and (#strings.containsIgnoreCase(vehicle.brand, 'Ashok') or #strings.containsIgnoreCase(vehicle.brand, 'Leyland'))) or (vehicle.model != null and (#strings.containsIgnoreCase(vehicle.model, 'Ashok') or #strings.containsIgnoreCase(vehicle.model, 'Leyland')))}"
+                         th:src="@{/images/ashok.jpg}" alt="Ashok Leyland" class="w-full h-full object-cover" />
+
+                    <img th:unless="${(vehicle.imageName != null and !#strings.isEmpty(vehicle.imageName)) or (vehicle.brand != null and (#strings.containsIgnoreCase(vehicle.brand, 'Benz') or #strings.containsIgnoreCase(vehicle.brand, 'Audi') or #strings.containsIgnoreCase(vehicle.brand, 'Prius') or #strings.containsIgnoreCase(vehicle.brand, 'Pulsar') or #strings.containsIgnoreCase(vehicle.brand, 'Pulser') or #strings.containsIgnoreCase(vehicle.brand, 'BMW') or #strings.containsIgnoreCase(vehicle.brand, 'HiAce') or #strings.containsIgnoreCase(vehicle.brand, 'Ashok') or #strings.containsIgnoreCase(vehicle.brand, 'Leyland'))) or (vehicle.model != null and (#strings.containsIgnoreCase(vehicle.model, 'Benz') or #strings.containsIgnoreCase(vehicle.model, 'Audi') or #strings.containsIgnoreCase(vehicle.model, 'Prius') or #strings.containsIgnoreCase(vehicle.model, 'Pulsar') or #strings.containsIgnoreCase(vehicle.model, 'Pulser') or #strings.containsIgnoreCase(vehicle.model, 'BMW') or #strings.containsIgnoreCase(vehicle.model, 'HiAce') or #strings.containsIgnoreCase(vehicle.model, 'Ashok') or #strings.containsIgnoreCase(vehicle.model, 'Leyland')))}"
+                         th:src="@{/images/user-icon.png}" alt="Vehicle" class="w-full h-full object-contain p-12" />
+                </div>
+
+                <!-- Info Panel -->
+                <div class="flex-1 p-8 flex flex-col justify-between">
+                    <div>
+                        <span class="px-2.5 py-1 bg-yellow-100 text-yellow-800 text-[10px] font-black uppercase tracking-widest rounded-full"
+                              th:text="${vehicle.type}">TYPE</span>
+                        <h1 class="text-3xl font-black text-rofi-black tracking-tight mt-3 mb-2"
+                            th:text="${vehicle.brand + ' ' + vehicle.model}">Vehicle Name</h1>
+
+                        <!-- Location -->
+                        <div class="flex items-center gap-1.5 text-sm font-bold text-gray-500 mb-6">
+                            <svg class="w-4 h-4 text-rofi-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            </svg>
+                            <span th:text="${vehicle.location}">Location</span>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="text-gray-600 font-medium leading-relaxed mb-6"
+                           th:text="${vehicle.getVehicleDescription()}">Description</p>
+
+                        <!-- Spec Grid -->
+                        <div class="grid grid-cols-2 gap-3 mb-6">
+                            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Category</p>
+                                <p class="text-rofi-black font-black" th:text="${vehicle.type}">Type</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Brand</p>
+                                <p class="text-rofi-black font-black" th:text="${vehicle.brand}">Brand</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Model</p>
+                                <p class="text-rofi-black font-black" th:text="${vehicle.model}">Model</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Status</p>
+                                <p class="font-black"
+                                   th:text="${vehicle.availableStatus ? 'Available' : 'Rented'}"
+                                   th:classappend="${vehicle.availableStatus ? 'text-green-600' : 'text-gray-500'}">Status</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Price + CTA -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 border-t border-gray-100">
+                        <div>
+                            <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Price Per Day</p>
+                            <div class="text-4xl font-black text-rofi-black">
+                                <span class="text-lg font-bold text-gray-500">LKR </span>
+                                <span th:text="${vehicle.pricePerDay != null ? #numbers.formatDecimal(vehicle.pricePerDay, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3 flex-wrap">
+                            <!-- Admin actions -->
+                            <a th:if="${isAdmin}"
+                               th:href="@{/vehicles/edit/{id}(id=${vehicle.id})}"
+                               class="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-black rounded-xl hover:bg-gray-50 transition-colors">
+                                ✏️ Edit
+                            </a>
+                            <a th:if="${isAdmin}"
+                               th:href="@{/vehicles/toggle/{id}(id=${vehicle.id})}"
+                               class="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-black rounded-xl hover:bg-gray-50 transition-colors"
+                               th:text="${vehicle.availableStatus ? 'Mark Rented' : 'Mark Available'}">Toggle</a>
+
+                            <!-- Customer: Book Now -->
+                            <a th:if="${isCustomer and vehicle.availableStatus}"
+                               th:href="@{/bookings/new/{id}(id=${vehicle.id})}"
+                               class="px-8 py-3 bg-gradient-to-r from-[#FFC107] to-[#FF9800] text-white font-black rounded-xl hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                                Book Now
+                            </a>
+
+                            <!-- Customer: unavailable -->
+                            <button th:if="${isCustomer and !vehicle.availableStatus}"
+                                    disabled
+                                    class="px-8 py-3 bg-gray-200 text-gray-400 font-black rounded-xl cursor-not-allowed">
+                                Unavailable
+                            </button>
+
+                            <!-- Guest: Login to book -->
+                            <a th:if="${isGuest and vehicle.availableStatus}"
+                               href="/users/login"
+                               class="px-8 py-3 bg-rofi-black text-white font-black rounded-xl hover:bg-gray-800 transition-colors">
+                                Log In to Book
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Driver Service Info Banner -->
+            <div th:if="${isCustomer and vehicle.availableStatus}"
+                 class="bg-yellow-50 border-t border-yellow-100 p-6 flex items-start gap-4">
+                <div class="w-10 h-10 bg-rofi-yellow rounded-full flex items-center justify-center shrink-0 text-white font-black text-lg">👤</div>
+                <div>
+                    <p class="font-black text-rofi-black text-sm">Want a Driver?</p>
+                    <p class="text-gray-600 text-xs font-medium mt-0.5">Book with a professional driver for an extra
+                        <strong>LKR 2,500.00 per day</strong>. Select this option on the booking form.
+                    </p>
+                    <a th:href="@{/bookings/new/{id}(id=${vehicle.id}, hasDriver=true)}"
+                       class="inline-block mt-2 px-5 py-2 bg-rofi-black text-white text-xs font-black rounded-lg hover:bg-gray-800 transition-colors">
+                        Book With Driver
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
