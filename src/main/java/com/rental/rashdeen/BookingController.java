@@ -1,7 +1,4 @@
-/**
- * Component 04: REST & Web Controllers
- * @author Nisal (it25100031@my.sliit.lk)
- */
+
 package com.rental.rashdeen;
 
 import com.rental.sandaru.PaymentStatus;
@@ -284,7 +281,6 @@ public class BookingController {
             return "redirect:/bookings/history?extendError=BookingNotFound";
         }
 
-        // --- Step 2: Ownership Validation Safeguard ---
         // Customers may only extend their own bookings
         if (user.getRole() != Role.ADMIN) {
             if (!booking.getUserId().equals(user.getId())) {

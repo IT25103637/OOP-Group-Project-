@@ -1,7 +1,4 @@
-/**
- * Component 02: Repositories & Data Access
- * @author Abhishek (it25102355@my.sliit.lk)
- */
+
 package com.rental.rashdeen;
 
 import com.rental.sithika.FileService;
