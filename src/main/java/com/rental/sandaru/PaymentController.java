@@ -1,7 +1,3 @@
-/**
- * Component 04: REST & Web Controllers
- * @author Nisal (it25100031@my.sliit.lk)
- */
 package com.rental.sandaru;
 
 import com.rental.rashdeen.Booking;
