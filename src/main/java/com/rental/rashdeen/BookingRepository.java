@@ -1,7 +1,4 @@
-/**
- * Component 02: Repositories & Data Access
- * @author Abhishek (it25102355@my.sliit.lk)
- */
+
 package com.rental.rashdeen;
 
 import com.rental.sithika.FileService;
@@ -78,7 +75,7 @@ public class BookingRepository {
 
     public void deleteById(String id) {
         List<String> lines = fileService.readLines(FILENAME);
-        // Keep every line whose first CSV field does NOT match the cancelled ID
+        
         List<String> updated = lines.stream()
                 .filter(line -> !line.startsWith(id + ","))
                 .toList();
