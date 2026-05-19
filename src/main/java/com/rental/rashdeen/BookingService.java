@@ -1,7 +1,3 @@
-/**
- * Component 03: Business Logic & Services
- * @author Rashdeen (it25103637@my.sliit.lk)
- */
 package com.rental.rashdeen;
 
 import com.rental.nichala.Van;
@@ -53,9 +49,6 @@ public class BookingService {
         // Calculate number of rental days (minimum 1 day)
         long days = ChronoUnit.DAYS.between(startDate, endDate);
         if (days <= 0) days = 1;
-
-        // Member 05 — Polymorphic price calculation
-        // Each vehicle type (Car/Bike/Van/Truck) calculates differently
         double baseCost = vehicle.calculateRentalPrice((int) days);
 
         // Driver surcharge: category-based daily rate × rental duration
