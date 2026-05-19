@@ -1,18 +1,8 @@
-/**
- * Component 01: Models & Entities
- * @author Nichala (it25102056@my.sliit.lk)
- */
+
 package com.rental.nichala;
 
 
-// ============================================================
-// Vehicle — Abstract base class (Polymorphism demonstrated)
-// Car, Bike, Van, Truck all extend this class.
-// Each subclass overrides: calculateRentalPrice(), calculateLateFee()
-//
-// CSV format in vehicles.txt:
-//   id,type,brand,model,pricePerDay,location,availableStatus,extraField
-// ============================================================
+
 public abstract class Vehicle {
 
     private String id;           // UUID string
@@ -22,12 +12,11 @@ public abstract class Vehicle {
     private double pricePerDay;
     private String location;
     private boolean availableStatus;
-    private String imageName;    // Optional: custom uploaded image filename (index 8 in CSV)
+    private String imageName;    
 
-    // Default constructor
+   
     public Vehicle() {}
 
-    // Common constructor for all subclasses
     public Vehicle(String id, String type, String brand, String model,
                    double pricePerDay, String location) {
         this.id = id;
@@ -39,35 +28,33 @@ public abstract class Vehicle {
         this.availableStatus = true; // new vehicles start as available
     }
 
-    // ---- Polymorphic abstract methods ----
-    // Each vehicle type calculates price and late fees differently (Member 05)
+    
+   
     public abstract double calculateRentalPrice(int days);
     public abstract double calculateLateFee(int lateDays);
     public abstract String getVehicleDescription();
 
-    // ---- CSV helpers (implemented by subclasses) ----
-    // Subclasses add their own extra field at the end
+  
+    
     public abstract String toCsv();
 
-    // The common part of the CSV (shared by all vehicle types)
-    // imageName is appended as the 9th field — null-safe (writes empty string if absent)
+    
     protected String baseCsv() {
         return id + "," + type + "," + brand + "," + model + ","
                 + pricePerDay + "," + location + "," + availableStatus;
     }
 
-    // The imageName suffix appended by subclasses that support custom images
+    
     protected String imageNameCsv() {
         return (imageName != null && !imageName.isEmpty()) ? "," + imageName : ",";
     }
 
-    // Toggle availability: Available <-> Rented (Member 01)
+    
     public void toggleStatus() {
         this.availableStatus = !this.availableStatus;
     }
 
-    // ---------- Getters & Setters ----------
-
+    
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
