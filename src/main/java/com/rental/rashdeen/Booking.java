@@ -1,7 +1,3 @@
-/**
- * Component 01: Models & Entities
- * @author Nichala (it25102056@my.sliit.lk)
- */
 package com.rental.rashdeen;
 
 import com.rental.sandaru.PaymentStatus;
@@ -76,10 +72,10 @@ public class Booking {
         b.lateFee       = Double.parseDouble(p[7]);
         b.paymentStatus = PaymentStatus.valueOf(p[8]);
 
-        // Field 9: hasDriver (backward-compatible; default false)
+        
         b.hasDriver = (p.length >= 10) && Boolean.parseBoolean(p[9]);
 
-        // Field 10: driverCharge (backward-compatible; default 0.0)
+    
         b.driverCharge = (p.length >= 11) ? Double.parseDouble(p[10]) : 0.0;
 
         return b;
@@ -120,6 +116,5 @@ public class Booking {
     public double getDriverCharge() { return driverCharge; }
     public void setDriverCharge(double driverCharge) { this.driverCharge = driverCharge; }
 
-    // Convenience: base fare + driver charge + any late fee
     public double getGrandTotal() { return totalCost + lateFee; }
 }
