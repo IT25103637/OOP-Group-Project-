@@ -5,13 +5,6 @@
 package com.rental.nichala;
 
 
-// ============================================================
-// Car — Subclass of Vehicle (Polymorphism)
-// Economy pricing: flat rate per day.
-// Late fee: 20% surcharge per late day.
-//
-// CSV extra field: numberOfSeats
-// ============================================================
 public class Car extends Vehicle {
 
     private int numberOfSeats;
@@ -33,7 +26,6 @@ public class Car extends Vehicle {
         return getPricePerDay() * days;
     }
 
-    // Member 03: Late fee — 20% extra per late day
     @Override
     public double calculateLateFee(int lateDays) {
         return getPricePerDay() * 1.2 * lateDays;
@@ -44,13 +36,12 @@ public class Car extends Vehicle {
         return "Car: " + getBrand() + " " + getModel() + " (" + numberOfSeats + " seats)";
     }
 
-    // Convert to CSV line — common fields + numberOfSeats at end
     @Override
     public String toCsv() {
         return baseCsv() + "," + numberOfSeats + imageNameCsv();
     }
 
-    // Build a Car object from a CSV line
+   
     public static Car fromCsv(String csvLine) {
         // Format: id,CAR,brand,model,pricePerDay,location,availableStatus,numberOfSeats[,imageName]
         String[] p = csvLine.split(",");
