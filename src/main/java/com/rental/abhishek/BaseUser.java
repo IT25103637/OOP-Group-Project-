@@ -1,7 +1,3 @@
-/**
- * Component 01: Models & Entities
- * @author Nichala (it25102056@my.sliit.lk)
- */
 package com.rental.abhishek;
 
 
@@ -28,7 +24,7 @@ public abstract class BaseUser {
     // Abstract method — every subclass must say where its dashboard is
     public abstract String getDashboardUrl();
 
-    // ---------- Getters & Setters ----------
+    // Getters & Setters 
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
