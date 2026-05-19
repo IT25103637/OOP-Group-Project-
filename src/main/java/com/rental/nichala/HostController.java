@@ -1,7 +1,4 @@
-/**
- * Component 04: REST & Web Controllers
- * @author Nisal (it25100031@my.sliit.lk)
- */
+
 package com.rental.nichala;
 
 import com.rental.nisal.WebConfig;
@@ -19,32 +16,24 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.file.*;
 
-// ============================================================
-// HostController — Handles the "Become a Host" public form.
-//
-// GET  /hosts/register         → Render the registration form
-// POST /hosts/submit-vehicle   → Save uploaded image to data/images/
-//                                 and append a new vehicle line to vehicles.txt
-//
-// Images are served via WebConfig which maps /uploads/** → data/images/
-// ============================================================
+
 @Controller
 @RequestMapping("/hosts")
 public class HostController {
 
-    // Runtime upload directory — must match WebConfig /uploads/** resource handler
+    
     private static final String IMAGE_DIR = "data/images";
 
     @Autowired
     private VehicleService vehicleService;
 
-    // ---- GET /hosts/register — Show the form ----
+    
     @GetMapping("/register")
     public String showHostForm(Model model) {
         return "host/register";
     }
 
-    // ---- POST /hosts/submit-vehicle — Process the submitted form ----
+    
     @PostMapping("/submit-vehicle")
     public String submitVehicle(
             @RequestParam("brand")        String brand,
@@ -100,15 +89,14 @@ public class HostController {
             default      -> new Car(null, brand, vehicleModel, pricePerDay, location, 5);
         };
 
-        // Attach the uploaded image name — stored as index 8 in vehicles.txt CSV
+        
         if (!savedImageName.isEmpty()) {
             vehicle.setImageName(savedImageName);
         }
 
-        // VehicleService generates VID#XXX and calls vehicleRepository.save()
         vehicleService.addVehicle(vehicle);
 
-        // ---- Step 3: Redirect to fleet page ----
+
         return "redirect:/vehicles?success";
     }
 }
