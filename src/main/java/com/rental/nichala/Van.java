@@ -1,17 +1,8 @@
-/**
- * Component 01: Models & Entities
- * @author Nichala (it25102056@my.sliit.lk)
- */
+
 package com.rental.nichala;
 
 
-// ============================================================
-// Van — Subclass of Vehicle (Polymorphism)
-// Cargo premium pricing: base rate + RM50 flat fee.
-// Late fee: 50% surcharge per late day.
-//
-// CSV extra field: cargoCapacity (kg)
-// ============================================================
+
 public class Van extends Vehicle {
 
     private double cargoCapacity;
@@ -50,7 +41,7 @@ public class Van extends Vehicle {
     }
 
     public static Van fromCsv(String csvLine) {
-        // Format: id,VAN,brand,model,pricePerDay,location,availableStatus,cargoCapacity[,imageName]
+       
         String[] p = csvLine.split(",");
         Van van = new Van(p[0], p[2], p[3], Double.parseDouble(p[4]), p[5], Double.parseDouble(p[7]));
         van.setAvailableStatus(Boolean.parseBoolean(p[6]));
