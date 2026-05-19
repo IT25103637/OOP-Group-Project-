@@ -1,7 +1,4 @@
-/**
- * Component 04: REST & Web Controllers
- * @author Nisal (it25100031@my.sliit.lk)
- */
+
 package com.rental.rashdeen;
 
 import com.rental.sandaru.PaymentStatus;
