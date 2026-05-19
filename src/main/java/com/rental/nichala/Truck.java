@@ -5,13 +5,7 @@
 package com.rental.nichala;
 
 
-// ============================================================
-// Truck — Subclass of Vehicle (Polymorphism)
-// Luxury/Heavy pricing: base rate + RM100 flat heavy-duty fee.
-// Late fee: 2x the daily rate per late day (highest penalty).
-//
-// CSV extra field: payloadCapacity (tons)
-// ============================================================
+
 public class Truck extends Vehicle {
 
     private int payloadCapacity;
@@ -27,13 +21,13 @@ public class Truck extends Vehicle {
     public int getPayloadCapacity() { return payloadCapacity; }
     public void setPayloadCapacity(int payloadCapacity) { this.payloadCapacity = payloadCapacity; }
 
-    // Member 05: Luxury/Heavy pricing — RM100 flat heavy-duty surcharge
+    
     @Override
     public double calculateRentalPrice(int days) {
         return (getPricePerDay() * days) + 100.0;
     }
 
-    // Member 03: Trucks have the highest late fee — 2x daily rate
+   
     @Override
     public double calculateLateFee(int lateDays) {
         return getPricePerDay() * 2.0 * lateDays;
